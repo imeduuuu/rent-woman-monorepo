@@ -1,0 +1,231 @@
+name: rent-woman
+region: fra
+alerts:
+  - rule: DEPLOYMENT_FAILED
+  - rule: DOMAIN_FAILED
+
+ingress:
+  rules:
+    - match:
+        path:
+          prefix: /api
+      component:
+        name: api
+    - match:
+        path:
+          prefix: /health
+      component:
+        name: api
+    - match:
+        path:
+          prefix: /socket.io
+      component:
+        name: api
+    - match:
+        path:
+          prefix: /
+      component:
+        name: web
+
+services:
+  - name: api
+    git:
+      repo_clone_url: https://github.com/imeduuuu/rent-woman-monorepo.git
+      branch: main
+    source_dir: /
+    build_command: corepack pnpm install --frozen-lockfile && corepack pnpm --filter @repo/types build && corepack pnpm --filter @repo/db prisma:generate && corepack pnpm --filter @repo/db build && corepack pnpm --filter @repo/api build
+    run_command: corepack pnpm --filter @repo/api start
+    environment_slug: node-js
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    http_port: 4000
+    envs:
+      - key: NODE_ENV
+        scope: RUN_TIME
+        value: production
+      - key: PORT
+        value: "4000"
+      - key: NEXT_PUBLIC_APP_URL
+        scope: RUN_TIME
+        type: SECRET
+        value: https://example.com
+      - key: NEXT_PUBLIC_API_URL
+        scope: RUN_TIME
+        type: SECRET
+        value: https://example.com
+      - key: INTERNAL_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+        value: change-this-in-every-environment
+      - key: DATABASE_URL
+        scope: RUN_TIME
+        type: SECRET
+        value: postgresql://postgres:postgres@localhost:5432/rent_woman
+      - key: DIRECT_URL
+        scope: RUN_TIME
+        type: SECRET
+        value: postgresql://postgres:postgres@localhost:5432/rent_woman
+      - key: REDIS_URL
+        scope: RUN_TIME
+        type: SECRET
+        value: redis://localhost:6379
+      - key: SOCKET_AUTH_SECRET
+        scope: RUN_TIME
+        type: SECRET
+        value: replace-with-an-hmac-secret
+      - key: STRIPE_SECRET_KEY
+        scope: RUN_TIME
+        type: SECRET
+        value: sk_test_123456789
+      - key: STRIPE_WEBHOOK_SECRET
+        scope: RUN_TIME
+        type: SECRET
+        value: whsec_123456789
+      - key: AWS_REGION
+        scope: RUN_TIME
+        type: SECRET
+        value: eu-west-1
+      - key: AWS_ACCESS_KEY_ID
+        scope: RUN_TIME
+        type: SECRET
+        value: AKIAEXAMPLE
+      - key: AWS_SECRET_ACCESS_KEY
+        scope: RUN_TIME
+        type: SECRET
+        value: example-secret
+      - key: AWS_S3_BUCKET
+        scope: RUN_TIME
+        type: SECRET
+        value: rent-woman-media
+      - key: AWS_S3_PUBLIC_BASE_URL
+        scope: RUN_TIME
+        type: SECRET
+        value: https://rent-woman-media.s3.eu-west-1.amazonaws.com
+      - key: AWS_REKOGNITION_MIN_CONFIDENCE
+        value: "75"
+      - key: SUMSUB_BASE_URL
+        scope: RUN_TIME
+        type: SECRET
+        value: https://api.sumsub.com
+      - key: SUMSUB_APP_TOKEN
+        scope: RUN_TIME
+        type: SECRET
+        value: sbx_example_app_token
+      - key: SUMSUB_SECRET_KEY
+        scope: RUN_TIME
+        type: SECRET
+        value: sbx_example_secret_key
+      - key: SUMSUB_LEVEL_NAME
+        scope: RUN_TIME
+        type: SECRET
+        value: basic-kyc-level
+      - key: RESEND_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+        value: re_example
+      - key: RESEND_FROM_EMAIL
+        scope: RUN_TIME
+        type: SECRET
+        value: hello@rentwoman.app
+      - key: TWILIO_ACCOUNT_SID
+        scope: RUN_TIME
+        type: SECRET
+        value: ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      - key: TWILIO_AUTH_TOKEN
+        scope: RUN_TIME
+        type: SECRET
+        value: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      - key: TWILIO_VERIFY_SERVICE_SID
+        scope: RUN_TIME
+        type: SECRET
+        value: VAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+  - name: web
+    git:
+      repo_clone_url: https://github.com/imeduuuu/rent-woman-monorepo.git
+      branch: main
+    source_dir: /
+    build_command: corepack pnpm install --frozen-lockfile && corepack pnpm --filter @repo/db prisma:generate && corepack pnpm --filter @repo/web build
+    run_command: corepack pnpm --filter @repo/web start
+    environment_slug: node-js
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    http_port: 3000
+    envs:
+      - key: NODE_ENV
+        scope: RUN_TIME
+        value: production
+      - key: NEXT_PUBLIC_APP_URL
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: https://example.com
+      - key: NEXT_PUBLIC_API_URL
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: https://example.com
+      - key: NEXT_PUBLIC_SOCKET_URL
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: https://example.com
+      - key: NEXT_PUBLIC_STUN_URL
+        value: stun:stun.l.google.com:19302
+      - key: NEXT_PUBLIC_TURN_URL
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: ""
+      - key: NEXT_PUBLIC_TURN_USERNAME
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: ""
+      - key: NEXT_PUBLIC_TURN_CREDENTIAL
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: ""
+      - key: AUTH_SECRET
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: replace-with-a-32-byte-random-string
+      - key: AUTH_URL
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: https://example.com
+      - key: INTERNAL_API_KEY
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: change-this-in-every-environment
+      - key: SOCKET_AUTH_SECRET
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: replace-with-an-hmac-secret
+      - key: GOOGLE_CLIENT_ID
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: ""
+      - key: GOOGLE_CLIENT_SECRET
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: ""
+      - key: STRIPE_SECRET_KEY
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: sk_test_123456789
+      - key: STRIPE_PRICE_PREMIUM_MONTHLY
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: price_123456789
+      - key: STRIPE_PRICE_ELITE_MONTHLY
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: price_987654321
+      - key: STRIPE_PRICE_ONE_TIME_SPOTLIGHT
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: price_555555555
+      - key: DATABASE_URL
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: postgresql://postgres:postgres@localhost:5432/rent_woman
+      - key: DIRECT_URL
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: postgresql://postgres:postgres@localhost:5432/rent_woman
