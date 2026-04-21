@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "types": ["node"],
+    "paths": {
+      "@repo/db": ["../../packages/db/dist/src/index.d.ts"],
+      "@repo/types": ["../../packages/types/dist/index.d.ts"]
+    }
+  },
+  "include": ["src/**/*.ts"]
+}

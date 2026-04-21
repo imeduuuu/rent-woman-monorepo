@@ -1,0 +1,38 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalEnv": [
+    "NEXT_PUBLIC_APP_URL",
+    "NEXT_PUBLIC_API_URL",
+    "NEXT_PUBLIC_SOCKET_URL",
+    "AUTH_SECRET",
+    "AUTH_URL",
+    "INTERNAL_API_KEY",
+    "SOCKET_AUTH_SECRET",
+    "STRIPE_SECRET_KEY",
+    "STRIPE_PRICE_PREMIUM_MONTHLY",
+    "STRIPE_PRICE_ELITE_MONTHLY",
+    "STRIPE_PRICE_ONE_TIME_SPOTLIGHT"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**", "build/**", "coverage/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "dependsOn": ["^lint"],
+      "outputs": []
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"],
+      "outputs": []
+    },
+    "test": {
+      "dependsOn": ["^test"],
+      "outputs": ["coverage/**"]
+    }
+  }
+}

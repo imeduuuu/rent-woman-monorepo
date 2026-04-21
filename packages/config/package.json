@@ -1,0 +1,10 @@
+{
+  "name": "@repo/config",
+  "version": "1.0.0",
+  "private": true,
+  "exports": {
+    "./eslint/base": "./eslint/base.cjs",
+    "./eslint/next": "./eslint/next.cjs",
+    "./tailwind/preset": "./tailwind/preset.js"
+  }
+}

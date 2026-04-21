@@ -1,0 +1,11 @@
+module.exports = {
+  extends: ["./base.cjs", "next/core-web-vitals"],
+  settings: {
+    next: {
+      rootDir: ["."]
+    }
+  },
+  rules: {
+    "@next/next/no-html-link-for-pages": "off"
+  }
+};
