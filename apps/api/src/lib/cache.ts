@@ -12,7 +12,16 @@ const upstash = env.UPSTASH_REDIS_REST_URL && env.UPSTASH_REDIS_REST_TOKEN
     })
   : null;
 
-const redis = env.REDIS_URL ? new IORedis(env.REDIS_URL) : null;
+const redis = env.REDIS_URL
+  ? new IORedis(env.REDIS_URL, {
+      lazyConnect: true,
+      maxRetriesPerRequest: 1
+    })
+  : null;
+
+redis?.on("error", (error) => {
+  console.error("Redis cache unavailable:", error.message);
+});
 
 export async function cacheSet(key: string, value: CacheValue, ttlSeconds = 60): Promise<void> {
   const payload = typeof value === "string" ? value : JSON.stringify(value);
