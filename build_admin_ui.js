@@ -1,10 +1,7 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Cérebro IA — rWoman</title>
-<link href="https://fonts.googleapis.com/css2?family=GFS+Didot&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet">
-<style>
+const fs = require('fs');
+const path = require('path');
+
+const css = `
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg: #030108;
@@ -183,11 +180,9 @@ html,body{
 .toggle.on { background: var(--success); }
 .toggle::after { content: ''; position: absolute; width: 18px; height: 18px; background: #fff; border-radius: 50%; top: 3px; left: 3px; transition: 0.3s; }
 .toggle.on::after { transform: translateX(20px); }
-</style>
-</head>
-<body>
-<div class="layout">
-  
+`;
+
+const sidebarHtml = `
 <div class="sidebar">
   <div class="brand">
     <h1>rWoman</h1>
@@ -196,40 +191,103 @@ html,body{
   <div class="nav">
     <div class="nav-group">
       <div class="nav-title">Principal</div>
-      <a href="02-dashboard.html" class="nav-link "><span style="font-size:16px">⊞</span> Painel</a>
-      <a href="03-perfil.html" class="nav-link "><span style="font-size:16px">👤</span> Meu Perfil</a>
+      <a href="02-dashboard.html" class="nav-link {nav_dashboard}"><span style="font-size:16px">⊞</span> Painel</a>
+      <a href="03-perfil.html" class="nav-link {nav_perfil}"><span style="font-size:16px">👤</span> Meu Perfil</a>
     </div>
     <div class="nav-group">
       <div class="nav-title">Comunicação</div>
-      <a href="04-mensagens.html" class="nav-link "><span style="font-size:16px">✉</span> Mensagens <span class="badge">12</span></a>
-      <a href="05-notificacoes.html" class="nav-link "><span style="font-size:16px">🔔</span> Notificações <span class="badge">5</span></a>
+      <a href="04-mensagens.html" class="nav-link {nav_mensagens}"><span style="font-size:16px">✉</span> Mensagens <span class="badge">12</span></a>
+      <a href="05-notificacoes.html" class="nav-link {nav_notificacoes}"><span style="font-size:16px">🔔</span> Notificações <span class="badge">5</span></a>
     </div>
     <div class="nav-group">
       <div class="nav-title">Gestão</div>
-      <a href="06-agenda.html" class="nav-link "><span style="font-size:16px">📅</span> Agenda</a>
-      <a href="07-galeria.html" class="nav-link "><span style="font-size:16px">🖼</span> Galeria <span class="badge">3</span></a>
-      <a href="08-visitas.html" class="nav-link "><span style="font-size:16px">👁</span> Visitas</a>
-      <a href="09-estatisticas.html" class="nav-link "><span style="font-size:16px">📈</span> Estatísticas</a>
+      <a href="06-agenda.html" class="nav-link {nav_agenda}"><span style="font-size:16px">📅</span> Agenda</a>
+      <a href="07-galeria.html" class="nav-link {nav_galeria}"><span style="font-size:16px">🖼</span> Galeria <span class="badge">3</span></a>
+      <a href="08-visitas.html" class="nav-link {nav_visitas}"><span style="font-size:16px">👁</span> Visitas</a>
+      <a href="09-estatisticas.html" class="nav-link {nav_estatisticas}"><span style="font-size:16px">📈</span> Estatísticas</a>
     </div>
     <div class="nav-group">
       <div class="nav-title">Segurança & IA</div>
-      <a href="11-verificacao.html" class="nav-link "><span style="font-size:16px">✓</span> Verificação <span class="badge success">OK</span></a>
-      <a href="12-configuracoes.html" class="nav-link "><span style="font-size:16px">⚙</span> Configurações</a>
-      <a href="cerebro.html" class="nav-link active"><span style="font-size:16px; color:var(--primary)">✦</span> Cérebro IA</a>
+      <a href="11-verificacao.html" class="nav-link {nav_verificacao}"><span style="font-size:16px">✓</span> Verificação <span class="badge success">OK</span></a>
+      <a href="12-configuracoes.html" class="nav-link {nav_config}"><span style="font-size:16px">⚙</span> Configurações</a>
+      <a href="cerebro.html" class="nav-link {nav_cerebro}"><span style="font-size:16px; color:var(--primary)">✦</span> Cérebro IA</a>
     </div>
   </div>
 </div>
+`;
 
+function buildPage(filename, title, contentHtml, activeNav) {
+  let sidebar = sidebarHtml
+    .replace('{nav_dashboard}', activeNav === 'dashboard' ? 'active' : '')
+    .replace('{nav_perfil}', activeNav === 'perfil' ? 'active' : '')
+    .replace('{nav_mensagens}', activeNav === 'mensagens' ? 'active' : '')
+    .replace('{nav_notificacoes}', activeNav === 'notificacoes' ? 'active' : '')
+    .replace('{nav_agenda}', activeNav === 'agenda' ? 'active' : '')
+    .replace('{nav_galeria}', activeNav === 'galeria' ? 'active' : '')
+    .replace('{nav_visitas}', activeNav === 'visitas' ? 'active' : '')
+    .replace('{nav_estatisticas}', activeNav === 'estatisticas' ? 'active' : '')
+    .replace('{nav_verificacao}', activeNav === 'verificacao' ? 'active' : '')
+    .replace('{nav_config}', activeNav === 'config' ? 'active' : '')
+    .replace('{nav_cerebro}', activeNav === 'cerebro' ? 'active' : '');
+
+  return `<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>${title} — rWoman</title>
+<link href="https://fonts.googleapis.com/css2?family=GFS+Didot&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>${css}</style>
+</head>
+<body>
+<div class="layout">
+  ${sidebar}
   <div class="main">
     <div class="header">
-      <div class="page-title">Cérebro IA</div>
+      <div class="page-title">${title}</div>
       <div class="header-actions">
         <span style="color:var(--text-muted);font-size:12px">● Online</span>
         <button class="btn btn-outline" onclick="window.location.href='/'">Ver Site</button>
       </div>
     </div>
     <div class="content">
-      
+      ${contentHtml}
+    </div>
+  </div>
+</div>
+<script>
+  // Simple toggle logic for settings
+  document.querySelectorAll('.toggle').forEach(t => t.onclick = () => t.classList.toggle('on'));
+</script>
+</body>
+</html>`;
+}
+
+// 1. Dashboard
+const dashboardHtml = `
+<div class="grid-4" style="margin-bottom:32px">
+  <div class="card"><div class="card-header">Visitas Hoje</div><div class="stat-value">1,248</div><div class="trend">▲ +12% vs Ontem</div></div>
+  <div class="card"><div class="card-header">Novas Mensagens</div><div class="stat-value">42</div><div class="trend">▲ +5% vs Ontem</div></div>
+  <div class="card"><div class="card-header">Reservas Pendentes</div><div class="stat-value">3</div><div class="trend down">▼ -1 vs Ontem</div></div>
+  <div class="card"><div class="card-header">Ganhos Mensais</div><div class="stat-value">€4,200</div><div class="trend">▲ +18% vs Mês passado</div></div>
+</div>
+<div class="grid-2">
+  <div class="card">
+    <div class="card-header"><span>Atividade Recente</span><button class="btn btn-outline" style="padding:4px 8px;font-size:10px">Ver Tudo</button></div>
+    <div class="feed-item"><div class="feed-icon">✉</div><div><div class="feed-text">Nova mensagem de Cliente #892</div><div class="feed-time">Há 5 minutos</div></div></div>
+    <div class="feed-item"><div class="feed-icon" style="color:var(--success);background:rgba(0,255,170,0.1)">✓</div><div><div class="feed-text">Pagamento recebido (€200)</div><div class="feed-time">Há 2 horas</div></div></div>
+    <div class="feed-item"><div class="feed-icon">📅</div><div><div class="feed-text">Nova reserva solicitada</div><div class="feed-time">Há 3 horas</div></div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span>Cérebro IA — Ações Automáticas</span><button class="btn btn-outline" style="padding:4px 8px;font-size:10px" onclick="window.location.href='cerebro.html'">Cérebro IA</button></div>
+    <div class="feed-item"><div class="feed-icon" style="color:#fff;background:var(--primary)">✦</div><div><div class="feed-text">3 FAQs respondidas automaticamente</div><div class="feed-time">Nesta hora</div></div></div>
+    <div class="feed-item"><div class="feed-icon" style="color:#fff;background:var(--primary)">✦</div><div><div class="feed-text">Perfil atualizado na Base de Conhecimento</div><div class="feed-time">Há 4 horas</div></div></div>
+  </div>
+</div>
+`;
+fs.writeFileSync('apps/web/public/02-dashboard.html', buildPage('02-dashboard.html', 'Painel Geral', dashboardHtml, 'dashboard'));
+
+// 2. Cerebro IA (The Fully Automatic Dashboard the user wants)
+const cerebroHtml = `
 <div class="card" style="margin-bottom:32px; background: linear-gradient(to right, rgba(138,43,226,0.1), transparent); border-left: 4px solid var(--primary);">
   <h2 style="font-family:var(--font-serif);font-size:28px;margin-bottom:8px">✦ Aurora AI</h2>
   <p style="color:var(--text-muted);font-size:16px;max-width:800px;line-height:1.5">
@@ -265,13 +323,118 @@ html,body{
     </div>
   </div>
 </div>
+`;
+fs.writeFileSync('apps/web/public/cerebro.html', buildPage('cerebro.html', 'Cérebro IA', cerebroHtml, 'cerebro'));
 
+// 3. Mensagens
+const mensagensHtml = `
+<div class="chat-layout">
+  <div class="card chat-list" style="padding:16px">
+    <div class="chat-item active">
+      <div style="font-weight:600;margin-bottom:4px">Cliente Privado</div>
+      <div style="font-size:12px;color:var(--text-muted)">Confirmo para as 18h?</div>
+    </div>
+    <div class="chat-item">
+      <div style="font-weight:600;margin-bottom:4px">Visitante #104 <span class="badge" style="background:var(--warning);color:#000">IA Escalou</span></div>
+      <div style="font-size:12px;color:var(--text-muted)">Pode ser num hotel no centro?</div>
+    </div>
+    <div class="chat-item">
+      <div style="font-weight:600;margin-bottom:4px">Carlos M.</div>
+      <div style="font-size:12px;color:var(--text-muted)">Obrigado pela excelente tarde.</div>
+    </div>
+  </div>
+  <div class="chat-window">
+    <div class="chat-header">
+      <div style="font-family:var(--font-serif);font-size:20px">Cliente Privado</div>
+      <div style="font-size:12px;color:var(--success)">● Online</div>
+    </div>
+    <div class="chat-messages">
+      <div class="msg in">Olá, tens disponibilidade para amanhã à tarde?</div>
+      <div class="msg out" style="background:rgba(138,43,226,0.2);border:1px solid var(--primary)"><span style="font-size:10px;text-transform:uppercase;display:block;margin-bottom:4px;color:var(--primary)">✦ Resposta Automática (IA)</span>Sim, tenho horário livre das 14h às 18h amanhã. Qual horário preferes?</div>
+      <div class="msg in">Excelente. Confirmo para as 18h?</div>
+    </div>
+    <div class="chat-input">
+      <input type="text" placeholder="Escreve uma mensagem...">
+      <button class="btn">Enviar</button>
     </div>
   </div>
 </div>
-<script>
-  // Simple toggle logic for settings
-  document.querySelectorAll('.toggle').forEach(t => t.onclick = () => t.classList.toggle('on'));
-</script>
-</body>
-</html>
+`;
+fs.writeFileSync('apps/web/public/04-mensagens.html', buildPage('04-mensagens.html', 'Mensagens', mensagensHtml, 'mensagens'));
+
+// 4. Agenda
+const agendaHtml = `
+<div class="card mb-4" style="margin-bottom:24px">
+  <div class="card-header" style="margin-bottom:0">Maio 2025</div>
+</div>
+<div class="calendar-grid">
+  <div class="cal-day"><div class="cal-date">Seg 1</div></div>
+  <div class="cal-day"><div class="cal-date">Ter 2</div><div class="cal-event">14:00 - Cliente VIP</div></div>
+  <div class="cal-day"><div class="cal-date">Qua 3</div><div class="cal-event">18:00 - Reserva</div></div>
+  <div class="cal-day"><div class="cal-date">Qui 4</div></div>
+  <div class="cal-day"><div class="cal-date">Sex 5</div><div class="cal-event" style="background:var(--danger)">Bloqueado</div></div>
+  <div class="cal-day"><div class="cal-date">Sáb 6</div></div>
+  <div class="cal-day"><div class="cal-date">Dom 7</div></div>
+</div>
+`;
+fs.writeFileSync('apps/web/public/06-agenda.html', buildPage('06-agenda.html', 'Agenda', agendaHtml, 'agenda'));
+
+// 5. Galeria
+const galeriaHtml = `
+<div style="display:flex;justify-content:flex-end;margin-bottom:24px">
+  <button class="btn">Upload Nova Foto</button>
+</div>
+<div class="gallery-grid">
+  <div class="gal-item"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80" class="gal-img"><div class="gal-overlay"><button class="btn btn-outline" style="width:100%">Tornar Privada</button></div></div>
+  <div class="gal-item"><img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&q=80" class="gal-img"><div class="gal-overlay"><button class="btn btn-outline" style="width:100%">Tornar Privada</button></div></div>
+  <div class="gal-item"><img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80" class="gal-img"><div class="gal-overlay"><button class="btn btn-outline" style="width:100%">Tornar Privada</button></div></div>
+  <div class="gal-item" style="border: 2px dashed var(--panel-border); background: transparent; display:grid; place-items:center">
+    <div style="text-align:center; color:var(--text-muted)">
+      <div style="font-size:32px;margin-bottom:8px">+</div>
+      <div style="font-size:12px;text-transform:uppercase">Adicionar</div>
+    </div>
+  </div>
+</div>
+`;
+fs.writeFileSync('apps/web/public/07-galeria.html', buildPage('07-galeria.html', 'Galeria', galeriaHtml, 'galeria'));
+
+// 6. Configuracoes
+const configHtml = `
+<div class="card" style="max-width:600px;margin:0 auto">
+  <div class="setting-row">
+    <div>
+      <div style="font-size:16px;margin-bottom:4px">Notificações Push</div>
+      <div style="font-size:12px;color:var(--text-muted)">Recebe alertas de novas mensagens e reservas.</div>
+    </div>
+    <div class="toggle on"></div>
+  </div>
+  <div class="setting-row">
+    <div>
+      <div style="font-size:16px;margin-bottom:4px">Modo Invisível</div>
+      <div style="font-size:12px;color:var(--text-muted)">Oculta o teu perfil do diretório público.</div>
+    </div>
+    <div class="toggle"></div>
+  </div>
+  <div class="setting-row">
+    <div>
+      <div style="font-size:16px;margin-bottom:4px">Aprovação Automática</div>
+      <div style="font-size:12px;color:var(--text-muted)">Aceita reservas de clientes verificados automaticamente.</div>
+    </div>
+    <div class="toggle on"></div>
+  </div>
+  <div style="margin-top:32px">
+    <button class="btn" style="width:100%">Guardar Definições</button>
+  </div>
+</div>
+`;
+fs.writeFileSync('apps/web/public/12-configuracoes.html', buildPage('12-configuracoes.html', 'Configurações', configHtml, 'config'));
+
+// Write remaining basic pages
+const basicPages = ['03-perfil.html', '05-notificacoes.html', '08-visitas.html', '09-estatisticas.html', '10-anunciate.html', '11-verificacao.html', '13-suporte.html'];
+basicPages.forEach(p => {
+  const t = p.split('-')[1].replace('.html','').toUpperCase();
+  const html = `<div class="card"><div class="card-header">${t}</div><p style="color:var(--text-muted);line-height:1.6">Área de ${t.toLowerCase()} em desenvolvimento. O design global foi aplicado e esta secção será preenchida com as funcionalidades finais em breve.</p></div>`;
+  fs.writeFileSync('apps/web/public/' + p, buildPage(p, t, html, p.split('-')[1].replace('.html','')));
+});
+
+console.log('Beautiful Admin UI built!');
