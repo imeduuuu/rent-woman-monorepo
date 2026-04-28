@@ -1,8 +1,8 @@
 import { prisma } from "@repo/db";
 import Stripe from "stripe";
 
-
 import { env } from "../config/env";
+import { notifyPaymentFailed, notifyPaymentSuccess } from "./agents-service";
 
 export const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
@@ -69,25 +69,52 @@ export async function handleStripeWebhook(rawBody: Buffer, signature: string): P
     });
 
     if (session.mode === "subscription") {
+      const plan = session.amount_total && session.amount_total > 5000 ? "ELITE" : "PREMIUM";
+
       await prisma.user.update({
         where: { id: userId },
-        data: {
-          subscriptionPlan: session.amount_total && session.amount_total > 5000 ? "ELITE" : "PREMIUM"
-        }
+        data: { subscriptionPlan: plan }
       });
+
+      // Notificar AG-3 — confirmación + factura PDF
+      const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true, profile: { select: { country: true } } } });
+      if (user?.email) {
+        const previousPayments = await prisma.payment.count({ where: { userId, status: "SUCCEEDED" } });
+        void notifyPaymentSuccess({
+          userId,
+          email: user.email,
+          amount: (session.amount_total ?? 0) / 100,
+          currency: session.currency ?? "EUR",
+          planId: plan.toLowerCase(),
+          invoiceId: session.id,
+          country: user.profile?.country ?? "ES",
+          isFirstPayment: previousPayments <= 1
+        });
+      }
     }
   }
 
   if (event.type === "payment_intent.payment_failed") {
     const paymentIntent = event.data.object as Stripe.PaymentIntent;
+    const userId = paymentIntent.metadata?.userId;
 
     await prisma.payment.updateMany({
-      where: {
-        stripePaymentIntentId: paymentIntent.id
-      },
-      data: {
-        status: "FAILED"
-      }
+      where: { stripePaymentIntentId: paymentIntent.id },
+      data: { status: "FAILED" }
     });
+
+    // Notificar AG-3 — secuencia recuperación de pago
+    if (userId) {
+      const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true, profile: { select: { country: true } } } });
+      if (user?.email) {
+        void notifyPaymentFailed({
+          userId,
+          email: user.email,
+          country: user.profile?.country ?? "ES",
+          errorCode: paymentIntent.last_payment_error?.code ?? undefined,
+          errorMessage: paymentIntent.last_payment_error?.message ?? undefined
+        });
+      }
+    }
   }
 }

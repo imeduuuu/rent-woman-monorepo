@@ -39,7 +39,10 @@ const envSchema = z.object({
   RESEND_FROM_EMAIL: z.string().email(),
   TWILIO_ACCOUNT_SID: z.string(),
   TWILIO_AUTH_TOKEN: z.string(),
-  TWILIO_VERIFY_SERVICE_SID: z.string()
+  TWILIO_VERIFY_SERVICE_SID: z.string(),
+  // Agentes n8n
+  N8N_BASE_URL: z.string().url().optional(),
+  AGENTS_INTERNAL_TOKEN: z.string().optional()
 });
 
 export const env = envSchema.parse({
@@ -70,5 +73,7 @@ export const env = envSchema.parse({
   RESEND_FROM_EMAIL: process.env.RESEND_FROM_EMAIL,
   TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
   TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
-  TWILIO_VERIFY_SERVICE_SID: process.env.TWILIO_VERIFY_SERVICE_SID
+  TWILIO_VERIFY_SERVICE_SID: process.env.TWILIO_VERIFY_SERVICE_SID,
+  N8N_BASE_URL: process.env.N8N_BASE_URL,
+  AGENTS_INTERNAL_TOKEN: process.env.AGENTS_INTERNAL_TOKEN
 });

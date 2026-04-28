@@ -23,6 +23,24 @@ services:
     volumes:
       - redis-data:/data
 
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: rent-woman-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - NODE_ENV=production
+      - WEBHOOK_URL=http://localhost:5678/
+      - GENERIC_TIMEZONE=Europe/Madrid
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+    volumes:
+      - n8n-data:/home/node/.n8n
+
 volumes:
   postgres-data:
   redis-data:
+  n8n-data:

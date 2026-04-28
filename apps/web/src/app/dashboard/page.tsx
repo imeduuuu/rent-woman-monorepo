@@ -1,63 +1,95 @@
 import { prisma } from "@repo/db";
-import { Badge, Button, Card, CardDescription, CardTitle, Input } from "@repo/ui";
-import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { z } from "zod";
 
 import { auth } from "@/auth";
+import { DashboardTile } from "@/components/dashboard-tile";
 
-const listingInputSchema = z.object({
-  title: z.string().trim().min(3).max(80),
-  description: z.string().trim().min(20).max(1000),
-  category: z.string().trim().min(3).max(60),
-  baseRate: z.coerce.number().int().min(50).max(5000),
-  city: z.string().trim().min(2).max(80),
-  country: z.string().trim().min(2).max(80)
-});
+// ─── Icons ───────────────────────────────────────────────────────────────────
 
-const listingUpdateSchema = listingInputSchema.extend({
-  listingId: z.string().min(1)
-});
-
-const listingActionSchema = z.object({
-  listingId: z.string().min(1)
-});
-
-function parseFormData(formData: FormData): Record<string, FormDataEntryValue> {
-  return Object.fromEntries(formData.entries());
+function IconProfile() {
+  return (
+    <svg width={28} height={28} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" strokeLinecap="round" />
+    </svg>
+  );
 }
 
-function slugify(input: string): string {
-  const slug = input
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)+/g, "");
-
-  return slug || "listing";
+function IconSettings() {
+  return (
+    <svg width={28} height={28} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="3" />
+      <path strokeLinecap="round" d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+    </svg>
+  );
 }
 
-async function createUniqueSlug(base: string): Promise<string> {
-  let suffix = 0;
-
-  while (suffix < 1000) {
-    const candidate = suffix === 0 ? base : `${base}-${suffix}`;
-    const exists = await prisma.listing.findUnique({
-      where: { slug: candidate },
-      select: { id: true }
-    });
-
-    if (!exists) {
-      return candidate;
-    }
-
-    suffix += 1;
-  }
-
-  throw new Error("Unable to create a unique listing slug.");
+function IconListings() {
+  return (
+    <svg width={28} height={28} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+      <rect x="3" y="3" width="7" height="7" rx="1" />
+      <rect x="14" y="3" width="7" height="7" rx="1" />
+      <rect x="3" y="14" width="7" height="7" rx="1" />
+      <rect x="14" y="14" width="7" height="7" rx="1" />
+    </svg>
+  );
 }
+
+function IconClock() {
+  return (
+    <svg width={28} height={28} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 3" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function IconLock() {
+  return (
+    <svg width={28} height={28} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+      <rect x="5" y="11" width="14" height="10" rx="2" />
+      <path d="M8 11V7a4 4 0 0 1 8 0v4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconEye() {
+  return (
+    <svg width={28} height={28} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
+function IconMedia() {
+  return (
+    <svg width={28} height={28} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <circle cx="8.5" cy="8.5" r="1.5" />
+      <path d="M21 15l-5-5L5 21" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function IconChart() {
+  return (
+    <svg width={28} height={28} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+      <path d="M3 17l5-5 4 4 5-6 4 3" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+// ─── Plan banner ─────────────────────────────────────────────────────────────
+
+const planLabels: Record<string, string> = {
+  FREE: "Free plan",
+  PREMIUM: "Premium",
+  ELITE: "Elite"
+};
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default async function DashboardPage(): Promise<JSX.Element> {
   const session = await auth();
@@ -66,297 +98,142 @@ export default async function DashboardPage(): Promise<JSX.Element> {
     redirect("/sign-in");
   }
 
-  async function createListingAction(formData: FormData): Promise<void> {
-    "use server";
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    include: { profile: true }
+  });
 
-    const currentSession = await auth();
-
-    if (!currentSession?.user?.id) {
-      redirect("/sign-in");
-    }
-
-    const parsed = listingInputSchema.safeParse(parseFormData(formData));
-
-    if (!parsed.success) {
-      throw new Error(parsed.error.issues[0]?.message ?? "Invalid listing data.");
-    }
-
-    const slug = await createUniqueSlug(slugify(`${parsed.data.title}-${parsed.data.city}`));
-
-    await prisma.listing.create({
-      data: {
-        ownerId: currentSession.user.id,
-        slug,
-        title: parsed.data.title,
-        description: parsed.data.description,
-        category: parsed.data.category,
-        baseRate: parsed.data.baseRate,
-        city: parsed.data.city,
-        country: parsed.data.country,
-        status: "DRAFT",
-        isPublished: false,
-        currency: "EUR"
-      }
-    });
-
-    revalidatePath("/dashboard");
+  if (!user) {
+    redirect("/sign-in");
   }
 
-  async function updateListingAction(formData: FormData): Promise<void> {
-    "use server";
+  const pendingMediaCount = await prisma.mediaAsset.count({
+    where: { ownerId: user.id, moderationStatus: "PENDING" }
+  });
 
-    const currentSession = await auth();
+  const isFree = user.subscriptionPlan === "FREE";
+  const planLabel = planLabels[user.subscriptionPlan] ?? user.subscriptionPlan;
 
-    if (!currentSession?.user?.id) {
-      redirect("/sign-in");
-    }
-
-    const parsed = listingUpdateSchema.safeParse(parseFormData(formData));
-
-    if (!parsed.success) {
-      throw new Error(parsed.error.issues[0]?.message ?? "Invalid listing data.");
-    }
-
-    const existingListing = await prisma.listing.findFirst({
-      where: {
-        id: parsed.data.listingId,
-        ownerId: currentSession.user.id
-      },
-      select: {
-        id: true,
-        isPublished: true,
-        status: true
-      }
-    });
-
-    if (!existingListing) {
-      throw new Error("Listing not found.");
-    }
-
-    await prisma.listing.update({
-      where: {
-        id: existingListing.id
-      },
-      data: {
-        title: parsed.data.title,
-        description: parsed.data.description,
-        category: parsed.data.category,
-        baseRate: parsed.data.baseRate,
-        city: parsed.data.city,
-        country: parsed.data.country,
-        status: existingListing.isPublished ? "ACTIVE" : existingListing.status
-      }
-    });
-
-    revalidatePath("/dashboard");
-  }
-
-  async function toggleListingPublishAction(formData: FormData): Promise<void> {
-    "use server";
-
-    const currentSession = await auth();
-
-    if (!currentSession?.user?.id) {
-      redirect("/sign-in");
-    }
-
-    const parsed = listingActionSchema.safeParse(parseFormData(formData));
-
-    if (!parsed.success) {
-      throw new Error("Invalid listing action.");
-    }
-
-    const listing = await prisma.listing.findFirst({
-      where: {
-        id: parsed.data.listingId,
-        ownerId: currentSession.user.id
-      },
-      select: {
-        id: true,
-        isPublished: true
-      }
-    });
-
-    if (!listing) {
-      throw new Error("Listing not found.");
-    }
-
-    await prisma.listing.update({
-      where: {
-        id: listing.id
-      },
-      data: listing.isPublished
-        ? {
-            isPublished: false,
-            status: "DRAFT",
-            publishedAt: null
-          }
-        : {
-            isPublished: true,
-            status: "ACTIVE",
-            publishedAt: new Date()
-          }
-    });
-
-    revalidatePath("/dashboard");
-  }
-
-  async function deleteListingAction(formData: FormData): Promise<void> {
-    "use server";
-
-    const currentSession = await auth();
-
-    if (!currentSession?.user?.id) {
-      redirect("/sign-in");
-    }
-
-    const parsed = listingActionSchema.safeParse(parseFormData(formData));
-
-    if (!parsed.success) {
-      throw new Error("Invalid listing action.");
-    }
-
-    await prisma.listing.deleteMany({
-      where: {
-        id: parsed.data.listingId,
-        ownerId: currentSession.user.id
-      }
-    });
-
-    revalidatePath("/dashboard");
-  }
-
-  const [user, listings] = await Promise.all([
-    prisma.user.findUnique({
-      where: { id: session.user.id },
-      include: {
-        profile: true
-      }
-    }),
-    prisma.listing.findMany({
-      where: { ownerId: session.user.id },
-      orderBy: { createdAt: "desc" }
-    })
-  ]);
+  const avatarUrl = user.profile?.avatarKey
+    ? `${process.env.AWS_S3_PUBLIC_BASE_URL ?? ""}/${user.profile.avatarKey}`
+    : null;
 
   return (
-    <main className="container-page space-y-8">
-      <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-        <Card className="space-y-5">
-          <div className="flex flex-wrap items-center gap-3">
-            <CardTitle>{user?.name ?? "Profile owner"}</CardTitle>
-            <Badge>{session.user.role}</Badge>
-            <Badge>{session.user.subscriptionPlan}</Badge>
-            <Badge>{session.user.verificationStatus}</Badge>
-          </div>
-          <CardDescription>{user?.profile?.headline ?? "No public headline yet."}</CardDescription>
-          <p className="text-sm text-white/70">
-            Complete your onboarding, request KYC, upload approved media, and activate a higher plan for visibility.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <Link href="/dashboard/verification">
-              <Button>Launch verification</Button>
-            </Link>
-            <Link href="/pricing">
-              <Button variant="secondary">Manage plan</Button>
-            </Link>
-          </div>
-        </Card>
+    <main className="mx-auto max-w-lg px-4 py-8 space-y-6">
 
-        <Card className="space-y-4">
-          <CardTitle>Profile summary</CardTitle>
-          <div className="text-sm text-white/70">
-            <div>Email: {user?.email ?? "—"}</div>
-            <div>City: {user?.profile?.city ?? "—"}</div>
-            <div>Country: {user?.profile?.country ?? "—"}</div>
-            <div>Public: {user?.profile?.isPublic ? "Yes" : "No"}</div>
-          </div>
-        </Card>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">Create a new listing</h2>
-        <Card>
-          <form action={createListingAction} className="space-y-4">
-            <div className="grid gap-3 md:grid-cols-2">
-              <Input name="title" placeholder="Title" required />
-              <Input name="category" placeholder="Category" required />
-              <Input min={50} name="baseRate" placeholder="Base rate (EUR)" required step={10} type="number" />
-              <Input name="city" placeholder="City" required />
+      {/* ── Profile header ── */}
+      <div className="flex items-center gap-4">
+        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-white/10">
+          {avatarUrl ? (
+            <img alt={user.name ?? "Avatar"} className="h-full w-full object-cover" src={avatarUrl} />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-white/30">
+              {(user.name ?? "?")[0]?.toUpperCase()}
             </div>
-            <Input name="country" placeholder="Country" required />
-            <textarea
-              className="min-h-[120px] w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/40 focus:border-brand-accent"
-              name="description"
-              placeholder="Description"
-              required
-            />
-            <Button type="submit">Create draft listing</Button>
-          </form>
-        </Card>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">Your listings</h2>
-        <div className="grid gap-4">
-          {listings.map((listing) => (
-            <Card className="space-y-4" key={listing.id}>
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <div className="text-lg font-semibold text-white">{listing.title}</div>
-                  <div className="text-sm text-white/60">
-                    {listing.city}, {listing.country}
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Badge>{listing.status}</Badge>
-                  {listing.isFeatured ? <Badge>Featured</Badge> : null}
-                </div>
-              </div>
-
-              <form action={updateListingAction} className="space-y-4">
-                <input name="listingId" type="hidden" value={listing.id} />
-                <div className="grid gap-3 md:grid-cols-2">
-                  <Input defaultValue={listing.title} name="title" required />
-                  <Input defaultValue={listing.category} name="category" required />
-                  <Input defaultValue={String(listing.baseRate)} min={50} name="baseRate" required step={10} type="number" />
-                  <Input defaultValue={listing.city} name="city" required />
-                </div>
-                <Input defaultValue={listing.country} name="country" required />
-                <textarea
-                  className="min-h-[120px] w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/40 focus:border-brand-accent"
-                  defaultValue={listing.description}
-                  name="description"
-                  required
-                />
-                <Button type="submit" variant="secondary">
-                  Save changes
-                </Button>
-              </form>
-
-              <div className="flex flex-wrap gap-3">
-                <form action={toggleListingPublishAction}>
-                  <input name="listingId" type="hidden" value={listing.id} />
-                  <Button type="submit">{listing.isPublished ? "Unpublish" : "Publish now"}</Button>
-                </form>
-
-                <form action={deleteListingAction}>
-                  <input name="listingId" type="hidden" value={listing.id} />
-                  <Button type="submit" variant="ghost">
-                    Delete
-                  </Button>
-                </form>
-              </div>
-            </Card>
-          ))}
-
-          {listings.length === 0 ? (
-            <Card>
-              <CardDescription>You do not have any listings yet.</CardDescription>
-            </Card>
-          ) : null}
+          )}
         </div>
-      </section>
+        <div className="min-w-0">
+          <p className="truncate text-lg font-semibold text-white">{user.name ?? "Your name"}</p>
+          <p className="text-sm text-white/50">
+            {user.profile?.city && user.profile?.country
+              ? `${user.profile.city}, ${user.profile.country}`
+              : "Add your location"}
+          </p>
+        </div>
+      </div>
+
+      {/* ── Plan banner ── */}
+      <div className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-widest text-white/40">Plan activo</p>
+          <p className="mt-0.5 text-base font-semibold text-white">{planLabel}</p>
+          {isFree ? (
+            <p className="text-xs text-white/40">Upgrade para más visibilidad</p>
+          ) : (
+            <p className="text-xs text-brand-accent">Activo</p>
+          )}
+        </div>
+        <Link
+          href="/pricing"
+          className="shrink-0 rounded-xl bg-brand-accent px-4 py-2 text-xs font-bold text-black transition hover:opacity-90"
+        >
+          {isFree ? "Upgrade" : "Gestionar"}
+        </Link>
+      </div>
+
+      {/* ── Tile grid ── */}
+      <div className="grid grid-cols-2 gap-3">
+        <DashboardTile
+          href="/dashboard/profile"
+          icon={<IconProfile />}
+          label="Mi perfil"
+        />
+        <DashboardTile
+          href="/dashboard/listings"
+          icon={<IconListings />}
+          label="Mis anuncios"
+        />
+        <DashboardTile
+          href="/dashboard/availability"
+          icon={<IconClock />}
+          label="Disponible ahora"
+          statusDot="green"
+          sublabel="Activar / desactivar"
+        />
+        <DashboardTile
+          href="/dashboard/media"
+          icon={<IconLock />}
+          label="Fotos privadas"
+          badge={pendingMediaCount > 0 ? pendingMediaCount : undefined}
+        />
+        <DashboardTile
+          href="/dashboard/stats"
+          icon={<IconEye />}
+          label="Visitas"
+        />
+        <DashboardTile
+          href="/dashboard/media"
+          icon={<IconMedia />}
+          label="Mis fotos"
+        />
+        <DashboardTile
+          href="/pricing"
+          icon={<IconChart />}
+          label="Planes y precios"
+        />
+        <DashboardTile
+          href="/dashboard/verification"
+          icon={<IconSettings />}
+          label="Verificación KYC"
+          statusDot={user.verificationStatus === "APPROVED" ? "green" : "amber"}
+        />
+      </div>
+
+      {/* ── Quick nav ── */}
+      <details className="rounded-2xl border border-white/10 bg-white/5">
+        <summary className="flex cursor-pointer items-center justify-between px-5 py-4 text-sm font-medium text-white/70 hover:text-white">
+          Navegación del sitio
+          <svg fill="none" height={16} stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" width={16}>
+            <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </summary>
+        <div className="flex flex-col border-t border-white/10 px-5 py-2">
+          {[
+            { label: "Directory", href: "/directory" },
+            { label: "Pricing", href: "/pricing" },
+            { label: "Messages", href: "/chat" },
+            { label: "Sign out", href: "/api/auth/signout" }
+          ].map((item) => (
+            <Link
+              className="border-b border-white/5 py-3 text-sm text-white/60 transition last:border-0 hover:text-white"
+              href={item.href}
+              key={item.href}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      </details>
     </main>
   );
 }

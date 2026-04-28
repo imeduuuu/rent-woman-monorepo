@@ -2,23 +2,23 @@ import { Button } from "@repo/ui";
 import Link from "next/link";
 
 import { auth, signOut } from "@/auth";
-
+import { MobileNav } from "./mobile-nav";
 
 export async function SiteHeader(): Promise<JSX.Element> {
   const session = await auth();
 
   return (
-    <header className="border-b border-white/10">
+    <header className="sticky top-0 z-40 border-b border-white/10 bg-[#080808]/90 backdrop-blur-md">
       <div className="mx-auto flex max-w-screen items-center justify-between px-6 py-4">
         <Link className="text-lg font-bold tracking-[0.2em] text-white" href="/">
-          RENT WOMAN
+          rwoman
         </Link>
 
         <nav className="hidden items-center gap-6 text-sm text-white/70 md:flex">
-          <Link href="/directory">Directory</Link>
-          <Link href="/pricing">Pricing</Link>
-          <Link href="/chat">Messages</Link>
-          <Link href="/dashboard">Dashboard</Link>
+          <Link className="transition hover:text-white" href="/directory">Directory</Link>
+          <Link className="transition hover:text-white" href="/pricing">Pricing</Link>
+          <Link className="transition hover:text-white" href="/chat">Messages</Link>
+          <Link className="transition hover:text-white" href="/dashboard">Dashboard</Link>
         </nav>
 
         <div className="flex items-center gap-3">
@@ -40,14 +40,15 @@ export async function SiteHeader(): Promise<JSX.Element> {
             </>
           ) : (
             <>
-              <Link href="/sign-in">
+              <Link className="hidden md:block" href="/sign-in">
                 <Button variant="ghost">Sign in</Button>
               </Link>
-              <Link href="/sign-up">
+              <Link className="hidden md:block" href="/sign-up">
                 <Button>Apply</Button>
               </Link>
             </>
           )}
+          <MobileNav userEmail={session?.user?.email} />
         </div>
       </div>
     </header>

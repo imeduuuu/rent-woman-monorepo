@@ -3,6 +3,31 @@ import { Button, Card, Input } from "@repo/ui";
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 
+import { env } from "@/lib/env";
+
+async function notifyAgentNewUser(params: { userId: string; email: string; name: string }): Promise<void> {
+  if (!env.N8N_BASE_URL || !env.AGENTS_INTERNAL_TOKEN) return;
+  try {
+    await fetch(`${env.N8N_BASE_URL}/webhook/new-user`, {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-internal-token": env.AGENTS_INTERNAL_TOKEN },
+      body: JSON.stringify({
+        event: "new_user",
+        userId: params.userId,
+        email: params.email,
+        name: params.name,
+        country: "ES",
+        language: "es",
+        plan: "free",
+        registeredAt: new Date().toISOString()
+      }),
+      signal: AbortSignal.timeout(8000)
+    });
+  } catch {
+    // No bloquear el registro si los agentes no están disponibles
+  }
+}
+
 
 export default function SignUpPage(): JSX.Element {
   async function createAccount(formData: FormData): Promise<void> {
@@ -27,6 +52,9 @@ export default function SignUpPage(): JSX.Element {
         }
       }
     });
+
+    // Notificar AG-2 — email de bienvenida (fire & forget)
+    void notifyAgentNewUser({ userId: newUser.id, email: newUser.email ?? "", name: newUser.name ?? name });
 
     redirect("/sign-in");
   }

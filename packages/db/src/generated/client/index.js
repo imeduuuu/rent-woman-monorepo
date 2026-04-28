@@ -390,7 +390,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/eduardosilva/Downloads/rent-woman-monorepo/packages/db/src/generated/client",
+      "value": "/Users/eduardosilva/Antigravity/rent-woman/packages/db/src/generated/client",
       "fromEnvVar": null
     },
     "config": {
@@ -404,11 +404,12 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/eduardosilva/Downloads/rent-woman-monorepo/packages/db/prisma/schema.prisma",
+    "sourceFilePath": "/Users/eduardosilva/Antigravity/rent-woman/packages/db/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null
+    "rootEnvPath": null,
+    "schemaEnvPath": "../../../.env"
   },
   "relativePath": "../../../prisma",
   "clientVersion": "6.19.3",

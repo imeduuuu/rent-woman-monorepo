@@ -1,11 +1,15 @@
-import type { HTMLAttributes, PropsWithChildren } from "react";
-
+import * as React from "react";
 import { cn } from "../lib/cn";
 
-export function Card({ children, className, ...props }: PropsWithChildren<HTMLAttributes<HTMLDivElement>>): JSX.Element {
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {}
+
+export function Card({ className, children, ...props }: CardProps): JSX.Element {
   return (
     <div
-      className={cn("rounded-2xl border border-white/10 bg-white/5 p-6 shadow-luxury backdrop-blur-sm", className)}
+      className={cn(
+        "bg-rw-black-100 border border-[rgba(255,255,255,0.15)] rounded-card p-6 transition-colors duration-base ease-rw-out hover:bg-rw-black-200",
+        className
+      )}
       {...props}
     >
       {children}
@@ -13,25 +17,23 @@ export function Card({ children, className, ...props }: PropsWithChildren<HTMLAt
   );
 }
 
-export function CardTitle({
-  children,
-  className,
-  ...props
-}: PropsWithChildren<HTMLAttributes<HTMLHeadingElement>>): JSX.Element {
+export function CardTitle({ className, children, ...props }: React.HTMLAttributes<HTMLHeadingElement>): JSX.Element {
   return (
-    <h3 className={cn("text-xl font-semibold text-white", className)} {...props}>
+    <h3
+      className={cn("font-body font-medium text-body-m text-white", className)}
+      {...props}
+    >
       {children}
     </h3>
   );
 }
 
-export function CardDescription({
-  children,
-  className,
-  ...props
-}: PropsWithChildren<HTMLAttributes<HTMLParagraphElement>>): JSX.Element {
+export function CardDescription({ className, children, ...props }: React.HTMLAttributes<HTMLParagraphElement>): JSX.Element {
   return (
-    <p className={cn("text-sm text-white/70", className)} {...props}>
+    <p
+      className={cn("text-body-s text-rw-white-45 leading-relaxed", className)}
+      {...props}
+    >
       {children}
     </p>
   );

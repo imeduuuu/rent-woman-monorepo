@@ -13,7 +13,9 @@ const envSchema = z.object({
   STRIPE_SECRET_KEY: z.string(),
   STRIPE_PRICE_PREMIUM_MONTHLY: z.string(),
   STRIPE_PRICE_ELITE_MONTHLY: z.string(),
-  STRIPE_PRICE_ONE_TIME_SPOTLIGHT: z.string()
+  STRIPE_PRICE_ONE_TIME_SPOTLIGHT: z.string(),
+  N8N_BASE_URL: z.string().url().optional(),
+  AGENTS_INTERNAL_TOKEN: z.string().optional()
 });
 
 export const env = envSchema.parse({
@@ -29,5 +31,7 @@ export const env = envSchema.parse({
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
   STRIPE_PRICE_PREMIUM_MONTHLY: process.env.STRIPE_PRICE_PREMIUM_MONTHLY,
   STRIPE_PRICE_ELITE_MONTHLY: process.env.STRIPE_PRICE_ELITE_MONTHLY,
-  STRIPE_PRICE_ONE_TIME_SPOTLIGHT: process.env.STRIPE_PRICE_ONE_TIME_SPOTLIGHT
+  STRIPE_PRICE_ONE_TIME_SPOTLIGHT: process.env.STRIPE_PRICE_ONE_TIME_SPOTLIGHT,
+  N8N_BASE_URL: process.env.N8N_BASE_URL,
+  AGENTS_INTERNAL_TOKEN: process.env.AGENTS_INTERNAL_TOKEN
 });

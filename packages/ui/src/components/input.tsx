@@ -1,13 +1,13 @@
-import type { InputHTMLAttributes } from "react";
-
+import * as React from "react";
 import { cn } from "../lib/cn";
 
-export function Input({ className, ...props }: InputHTMLAttributes<HTMLInputElement>): JSX.Element {
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+
+export function Input({ className, ...props }: InputProps): JSX.Element {
   return (
     <input
       className={cn(
-        "w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition",
-        "placeholder:text-white/40 focus:border-brand-accent",
+        "w-full h-10 px-4 bg-rw-black-300 border border-[rgba(255,255,255,0.15)] rounded-input text-body-m text-white placeholder:text-rw-white-45 outline-none transition-colors duration-base ease-rw-out focus:border-rw-pink",
         className
       )}
       {...props}

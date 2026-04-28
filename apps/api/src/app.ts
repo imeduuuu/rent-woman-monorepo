@@ -13,6 +13,7 @@ import { moderationRouter } from "./routes/moderation-routes";
 import { notificationRouter } from "./routes/notification-routes";
 import { paymentRouter } from "./routes/payment-routes";
 import { storageRouter } from "./routes/storage-routes";
+import { supportRouter } from "./routes/support-routes";
 import { handleStripeWebhook } from "./services/stripe-service";
 
 export function createApp(): express.Express {
@@ -58,6 +59,7 @@ export function createApp(): express.Express {
   app.use("/api/v1/kyc", express.json(), requireInternalApiKey, kycRouter);
   app.use("/api/v1/moderation", express.json(), requireInternalApiKey, moderationRouter);
   app.use("/api/v1/notifications", express.json(), requireInternalApiKey, notificationRouter);
+  app.use("/api/v1/support", express.json(), requireInternalApiKey, supportRouter);
 
   app.use(errorHandler);
 
