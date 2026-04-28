@@ -167,7 +167,7 @@ services:
     http_port: 3000
     envs:
       - key: NODE_ENV
-        scope: RUN_AND_BUILD_TIME
+        scope: RUN_TIME
         value: production
       - key: NEXT_PUBLIC_APP_URL
         scope: RUN_AND_BUILD_TIME
