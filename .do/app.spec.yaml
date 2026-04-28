@@ -146,13 +146,6 @@ services:
         scope: RUN_TIME
         type: SECRET
         value: VAreplace_me
-      - key: N8N_BASE_URL
-        scope: RUN_TIME
-        value: ${n8n.INTERNAL_URL}
-      - key: AGENTS_INTERNAL_TOKEN
-        scope: RUN_TIME
-        type: SECRET
-        value: local-agent-token-12345
 
   - name: web
     git:
