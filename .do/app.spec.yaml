@@ -23,9 +23,24 @@ ingress:
         name: api
     - match:
         path:
+          prefix: /n8n
+      component:
+        name: n8n
+    - match:
+        path:
           prefix: /
       component:
         name: web
+
+databases:
+  - name: db
+    cluster_name: rent-woman-pg
+    engine: PG
+    production: true
+  - name: cache
+    cluster_name: rent-woman-redis
+    engine: REDIS
+    production: true
 
 services:
   - name: api
@@ -48,11 +63,11 @@ services:
       - key: NEXT_PUBLIC_APP_URL
         scope: RUN_TIME
         type: SECRET
-        value: https://example.com
+        value: ${APP_URL}
       - key: NEXT_PUBLIC_API_URL
         scope: RUN_TIME
         type: SECRET
-        value: https://example.com
+        value: ${APP_URL}
       - key: INTERNAL_API_KEY
         scope: RUN_TIME
         type: SECRET
@@ -60,85 +75,26 @@ services:
       - key: DATABASE_URL
         scope: RUN_TIME
         type: SECRET
-        value: postgresql://postgres:postgres@localhost:5432/rent_woman
+        value: ${db.DATABASE_URL}
       - key: DIRECT_URL
         scope: RUN_TIME
         type: SECRET
-        value: postgresql://postgres:postgres@localhost:5432/rent_woman
+        value: ${db.DATABASE_URL}
       - key: REDIS_URL
         scope: RUN_TIME
         type: SECRET
-        value: redis://localhost:6379
+        value: ${cache.DATABASE_URL}
       - key: SOCKET_AUTH_SECRET
         scope: RUN_TIME
         type: SECRET
         value: replace-with-an-hmac-secret
-      - key: STRIPE_SECRET_KEY
+      - key: N8N_BASE_URL
+        scope: RUN_TIME
+        value: ${n8n.INTERNAL_URL}
+      - key: AGENTS_INTERNAL_TOKEN
         scope: RUN_TIME
         type: SECRET
-        value: sk_test_123456789
-      - key: STRIPE_WEBHOOK_SECRET
-        scope: RUN_TIME
-        type: SECRET
-        value: whsec_123456789
-      - key: AWS_REGION
-        scope: RUN_TIME
-        type: SECRET
-        value: eu-west-1
-      - key: AWS_ACCESS_KEY_ID
-        scope: RUN_TIME
-        type: SECRET
-        value: AKIAEXAMPLE
-      - key: AWS_SECRET_ACCESS_KEY
-        scope: RUN_TIME
-        type: SECRET
-        value: example-secret
-      - key: AWS_S3_BUCKET
-        scope: RUN_TIME
-        type: SECRET
-        value: rent-woman-media
-      - key: AWS_S3_PUBLIC_BASE_URL
-        scope: RUN_TIME
-        type: SECRET
-        value: https://rent-woman-media.s3.eu-west-1.amazonaws.com
-      - key: AWS_REKOGNITION_MIN_CONFIDENCE
-        value: "75"
-      - key: SUMSUB_BASE_URL
-        scope: RUN_TIME
-        type: SECRET
-        value: https://api.sumsub.com
-      - key: SUMSUB_APP_TOKEN
-        scope: RUN_TIME
-        type: SECRET
-        value: sbx_example_app_token
-      - key: SUMSUB_SECRET_KEY
-        scope: RUN_TIME
-        type: SECRET
-        value: sbx_example_secret_key
-      - key: SUMSUB_LEVEL_NAME
-        scope: RUN_TIME
-        type: SECRET
-        value: basic-kyc-level
-      - key: RESEND_API_KEY
-        scope: RUN_TIME
-        type: SECRET
-        value: re_example
-      - key: RESEND_FROM_EMAIL
-        scope: RUN_TIME
-        type: SECRET
-        value: hello@rentwoman.app
-      - key: TWILIO_ACCOUNT_SID
-        scope: RUN_TIME
-        type: SECRET
-        value: ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-      - key: TWILIO_AUTH_TOKEN
-        scope: RUN_TIME
-        type: SECRET
-        value: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-      - key: TWILIO_VERIFY_SERVICE_SID
-        scope: RUN_TIME
-        type: SECRET
-        value: VAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        value: local-agent-token-12345
 
   - name: web
     git:
@@ -158,74 +114,45 @@ services:
       - key: NEXT_PUBLIC_APP_URL
         scope: RUN_AND_BUILD_TIME
         type: SECRET
-        value: https://example.com
+        value: ${APP_URL}
       - key: NEXT_PUBLIC_API_URL
         scope: RUN_AND_BUILD_TIME
         type: SECRET
-        value: https://example.com
-      - key: NEXT_PUBLIC_SOCKET_URL
-        scope: RUN_AND_BUILD_TIME
-        type: SECRET
-        value: https://example.com
-      - key: NEXT_PUBLIC_STUN_URL
-        value: stun:stun.l.google.com:19302
-      - key: NEXT_PUBLIC_TURN_URL
-        scope: RUN_AND_BUILD_TIME
-        type: SECRET
-        value: ""
-      - key: NEXT_PUBLIC_TURN_USERNAME
-        scope: RUN_AND_BUILD_TIME
-        type: SECRET
-        value: ""
-      - key: NEXT_PUBLIC_TURN_CREDENTIAL
-        scope: RUN_AND_BUILD_TIME
-        type: SECRET
-        value: ""
-      - key: AUTH_SECRET
-        scope: RUN_AND_BUILD_TIME
-        type: SECRET
-        value: replace-with-a-32-byte-random-string
-      - key: AUTH_URL
-        scope: RUN_AND_BUILD_TIME
-        type: SECRET
-        value: https://example.com
-      - key: INTERNAL_API_KEY
-        scope: RUN_AND_BUILD_TIME
-        type: SECRET
-        value: change-this-in-every-environment
-      - key: SOCKET_AUTH_SECRET
-        scope: RUN_AND_BUILD_TIME
-        type: SECRET
-        value: replace-with-an-hmac-secret
-      - key: GOOGLE_CLIENT_ID
-        scope: RUN_AND_BUILD_TIME
-        type: SECRET
-        value: ""
-      - key: GOOGLE_CLIENT_SECRET
-        scope: RUN_AND_BUILD_TIME
-        type: SECRET
-        value: ""
-      - key: STRIPE_SECRET_KEY
-        scope: RUN_AND_BUILD_TIME
-        type: SECRET
-        value: sk_test_123456789
-      - key: STRIPE_PRICE_PREMIUM_MONTHLY
-        scope: RUN_AND_BUILD_TIME
-        type: SECRET
-        value: price_123456789
-      - key: STRIPE_PRICE_ELITE_MONTHLY
-        scope: RUN_AND_BUILD_TIME
-        type: SECRET
-        value: price_987654321
-      - key: STRIPE_PRICE_ONE_TIME_SPOTLIGHT
-        scope: RUN_AND_BUILD_TIME
-        type: SECRET
-        value: price_555555555
+        value: ${APP_URL}
       - key: DATABASE_URL
         scope: RUN_AND_BUILD_TIME
         type: SECRET
-        value: postgresql://postgres:postgres@localhost:5432/rent_woman
+        value: ${db.DATABASE_URL}
       - key: DIRECT_URL
         scope: RUN_AND_BUILD_TIME
         type: SECRET
-        value: postgresql://postgres:postgres@localhost:5432/rent_woman
+        value: ${db.DATABASE_URL}
+
+  - name: n8n
+    image:
+      registry_type: DOCKER_HUB
+      registry: n8nio
+      repository: n8n
+      tag: latest
+    http_port: 5678
+    envs:
+      - key: N8N_HOST
+        value: 0.0.0.0
+      - key: N8N_PORT
+        value: "5678"
+      - key: N8N_PROTOCOL
+        value: http
+      - key: NODE_ENV
+        value: production
+      - key: WEBHOOK_URL
+        value: ${APP_URL}/n8n/
+      - key: N8N_PATH
+        value: /n8n/
+      - key: N8N_ENCRYPTION_KEY
+        scope: RUN_TIME
+        type: SECRET
+        value: internal-n8n-encryption-key-123
+      - key: AGENTS_INTERNAL_TOKEN
+        scope: RUN_TIME
+        type: SECRET
+        value: local-agent-token-12345
