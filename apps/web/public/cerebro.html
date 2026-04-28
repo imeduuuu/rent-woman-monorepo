@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>rWoman — Cérebro IA</title>
+<link href="https://fonts.googleapis.com/css2?family=GFS+Didot&family=Josefin+Sans:ital,wght@0,100;0,200;0,300;0,400;0,600;1,100;1,200&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#06040E;--s1:#0B0916;--s2:#10091C;--s3:#170E26;--s4:#1E1330;
+  --ivory:#EDE8E0;--iv2:rgba(237,232,224,.6);--iv3:rgba(237,232,224,.32);--iv4:rgba(237,232,224,.14);--iv5:rgba(237,232,224,.06);
+  --v:#7B52F0;--vl:#A480FF;--vd:#5530CC;--vg:rgba(123,82,240,.12);
+  --gold:#B8872A;--gl:#D4A84B;
+  --jade:#278B62;--ro:#C04570;--rl:#E06090;
+  --bd:rgba(237,232,224,.07);--bd2:rgba(237,232,224,.13);--bdv:rgba(123,82,240,.26);
+  --sw:250px;--tb:54px;
+}
+html,body{height:100%;background:var(--ink);color:var(--ivory);font-family:'Josefin Sans',sans-serif;font-weight:200;font-size:14px;letter-spacing:.04em;overflow:hidden}
+::-webkit-scrollbar{width:2px}::-webkit-scrollbar-thumb{background:var(--vl)}
+.shell{display:flex;height:100vh}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* SIDEBAR */
+.sb{width:var(--sw);min-width:var(--sw);background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column;position:relative}
+.sb::before{content:'';position:absolute;top:-80px;left:-50px;width:200px;height:200px;background:radial-gradient(circle,rgba(123,82,240,.06),transparent 70%);pointer-events:none}
+.sb-head{padding:20px 18px 16px;border-bottom:1px solid var(--bd)}
+.sb-wm{font-family:'GFS Didot',serif;font-size:21px;letter-spacing:.14em;margin-bottom:3px}
+.sb-sub{font-size:8px;letter-spacing:.55em;text-transform:uppercase;color:var(--iv3);font-weight:300}
+.sb-prof{display:flex;align-items:center;gap:11px;padding:12px 13px;margin:12px 0 0;background:var(--s2);border:1px solid var(--bd);border-radius:11px;cursor:pointer;transition:.2s}
+.sb-prof:hover{border-color:var(--bdv)}
+.sb-av{width:36px;height:36px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,var(--vd),var(--vl));display:grid;place-items:center;font-family:'GFS Didot',serif;font-size:13px;border:1px solid rgba(123,82,240,.3)}
+.sb-un{font-size:11px;font-weight:300;letter-spacing:.14em;margin-bottom:3px}
+.sb-ut{font-size:8px;font-weight:300;letter-spacing:.28em;text-transform:uppercase;color:var(--gl);background:rgba(184,135,42,.1);border:1px solid rgba(184,135,42,.22);border-radius:20px;padding:2px 8px;display:inline-block}
+.sb-dot{width:6px;height:6px;border-radius:50%;background:var(--jade);box-shadow:0 0 6px rgba(39,139,98,.9);flex-shrink:0;margin-left:auto}
+.sb-sc{flex:1;overflow-y:auto;padding:9px 9px 6px}
+.sb-s{font-size:8px;letter-spacing:.4em;text-transform:uppercase;color:var(--iv4);padding:0 9px;margin:13px 0 4px;font-weight:300}
+.sb-a{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:8px;cursor:pointer;transition:.15s;color:var(--iv3);font-size:10px;font-weight:300;letter-spacing:.14em;text-transform:uppercase;border:1px solid transparent;margin-bottom:1px}
+.sb-a:hover{background:var(--vg);color:var(--iv2);border-color:rgba(123,82,240,.1)}
+.sb-a.on{background:rgba(123,82,240,.13);color:var(--ivory);border-color:var(--bdv)}
+.sb-a.on svg{color:var(--vl)}
+.sb-a svg{width:13px;height:13px;flex-shrink:0;opacity:.65}
+.sb-n{margin-left:auto;font-size:8px;font-weight:400;padding:2px 7px;border-radius:20px;background:var(--v);color:#fff}
+.sb-n.g{background:rgba(39,139,98,.16);color:var(--jade);border:1px solid rgba(39,139,98,.24)}
+.sb-n.au{background:rgba(184,135,42,.16);color:var(--gl);border:1px solid rgba(184,135,42,.24)}
+.sb-ft{padding:11px;border-top:1px solid var(--bd)}
+.sb-out{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:8px;cursor:pointer;transition:.15s;color:var(--rl);font-size:10px;font-weight:300;letter-spacing:.14em;text-transform:uppercase;border:1px solid transparent}
+.sb-out:hover{background:rgba(192,69,112,.08);border-color:rgba(192,69,112,.18)}
+
+/* TOPBAR */
+.tb{height:var(--tb);min-height:var(--tb);background:rgba(6,4,14,.9);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:0 22px;backdrop-filter:blur(22px)}
+.tb-t{font-family:'GFS Didot',serif;font-size:16px;letter-spacing:.07em}
+.tb-c{font-size:8px;letter-spacing:.38em;text-transform:uppercase;color:var(--iv3);margin-top:2px;font-weight:200}
+.tb-r{display:flex;align-items:center;gap:7px}
+.tb-btn{display:flex;align-items:center;gap:6px;background:var(--v);color:#fff;border-radius:8px;padding:0 14px;height:32px;font-size:9px;font-weight:300;letter-spacing:.24em;text-transform:uppercase;cursor:pointer;transition:.2s;white-space:nowrap;font-family:'Josefin Sans',sans-serif;border:none}
+.tb-btn:hover{background:var(--vl)}
+
+/* PAGE */
+.pw{flex:1;overflow-y:auto;padding:24px 24px 48px}
+
+/* CARDS */
+.c{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:18px}
+.cd{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:14px}
+.cv{background:linear-gradient(135deg,rgba(85,48,204,.24),rgba(123,82,240,.09));border:1px solid var(--bdv);border-radius:14px;padding:18px}
+.cg{background:linear-gradient(135deg,rgba(184,135,42,.12),rgba(212,168,75,.05));border:1px solid rgba(184,135,42,.24);border-radius:14px;padding:18px}
+.cr{background:linear-gradient(135deg,rgba(192,69,112,.09),transparent);border:1px solid rgba(192,69,112,.2);border-radius:14px;padding:18px}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+
+/* STATS */
+.st{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:15px;position:relative;overflow:hidden;transition:.2s}
+.st:hover{border-color:var(--bdv);transform:translateY(-2px)}
+.st::after{content:'';position:absolute;top:0;right:0;width:55px;height:55px;background:radial-gradient(circle at top right,rgba(123,82,240,.09),transparent 70%);pointer-events:none}
+.st-v{font-family:'GFS Didot',serif;font-size:28px;font-weight:400;line-height:1;letter-spacing:.03em;margin-top:9px}
+.st-d{display:inline-flex;align-items:center;gap:4px;font-size:8px;font-weight:300;letter-spacing:.1em;padding:2px 7px;border-radius:20px;margin-top:7px}
+.up{background:rgba(39,139,98,.1);color:var(--jade);border:1px solid rgba(39,139,98,.2)}
+
+/* PILLS */
+.pl{display:inline-flex;align-items:center;gap:4px;font-size:8px;font-weight:300;letter-spacing:.18em;text-transform:uppercase;padding:3px 8px;border-radius:20px}
+.pv{background:rgba(123,82,240,.13);color:var(--vl);border:1px solid rgba(123,82,240,.26)}
+.pg{background:rgba(39,139,98,.1);color:var(--jade);border:1px solid rgba(39,139,98,.2)}
+.pau{background:rgba(184,135,42,.11);color:var(--gl);border:1px solid rgba(184,135,42,.22)}
+.prr{background:rgba(192,69,112,.1);color:var(--rl);border:1px solid rgba(192,69,112,.2)}
+.pgr{background:rgba(237,232,224,.04);color:var(--iv3);border:1px solid var(--bd)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border-radius:8px;height:34px;padding:0 16px;font-size:9px;font-weight:300;letter-spacing:.24em;text-transform:uppercase;cursor:pointer;transition:.2s;font-family:'Josefin Sans',sans-serif;border:none;white-space:nowrap}
+.bp{background:var(--v);color:#fff}.bp:hover{background:var(--vl)}
+.bg{background:transparent;color:var(--iv3);border:1px solid var(--bd)}.bg:hover{border-color:var(--bd2);color:var(--iv2)}
+.bsm{height:28px;padding:0 12px;font-size:8px;border-radius:7px}
+.w100{width:100%}
+
+/* FORMS */
+.fl{display:flex;flex-direction:column;gap:6px}
+.fl label{font-size:8px;font-weight:300;letter-spacing:.38em;text-transform:uppercase;color:var(--iv3)}
+.fl input,.fl textarea,.fl select{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:9px 12px;font-size:11px;color:var(--ivory);font-family:'Josefin Sans',sans-serif;font-weight:200;letter-spacing:.08em;outline:none;transition:.2s;width:100%}
+.fl input:focus,.fl textarea:focus,.fl select:focus{border-color:var(--bdv);background:var(--s3)}
+.fl textarea{resize:vertical;min-height:80px;line-height:1.65}
+.fl select option{background:var(--s2)}
+
+/* TOGGLE */
+.tg{position:relative;width:36px;height:19px;flex-shrink:0}
+.tg input{opacity:0;position:absolute;width:100%;height:100%;cursor:pointer;z-index:1}
+.tg-t{position:absolute;inset:0;background:var(--s4);border:1px solid var(--bd);border-radius:20px;transition:.25s}
+.tg input:checked+.tg-t{background:var(--v);border-color:transparent}
+.tg-t::after{content:'';position:absolute;width:13px;height:13px;background:#fff;border-radius:50%;top:2px;left:2px;transition:.25s}
+.tg input:checked+.tg-t::after{transform:translateX(17px)}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:var(--iv3);padding:7px 11px;text-align:left;border-bottom:1px solid var(--bd);font-weight:200}
+.tbl td{padding:10px 11px;font-size:10px;letter-spacing:.07em;border-bottom:1px solid rgba(237,232,224,.03);vertical-align:middle}
+.tbl tr:hover td{background:rgba(237,232,224,.02)}
+.tbl tr:last-child td{border-bottom:none}
+
+/* PROGRESS */
+.pg2{height:2px;background:var(--s4);border-radius:2px;overflow:hidden}
+.pf{height:100%;background:linear-gradient(90deg,var(--vd),var(--vl));border-radius:2px;transition:.8s}
+
+/* MISC */
+.mc{font-size:8px;letter-spacing:.5em;text-transform:uppercase;color:var(--iv3);font-weight:300}
+.div{height:1px;background:var(--bd);margin:13px 0}
+.sr{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 0;border-bottom:1px solid rgba(237,232,224,.04)}
+.sr:last-child{border-bottom:none}
+.mb4{margin-bottom:4px}.mb8{margin-bottom:8px}.mb12{margin-bottom:12px}.mb16{margin-bottom:16px}.mb20{margin-bottom:20px}
+.mt8{margin-top:8px}.mt12{margin-top:12px}
+.flex{display:flex}.fac{align-items:center}.fjb{justify-content:space-between}.gap8{gap:8px}.gap12{gap:12px}
+
+/* CHATS */
+.co{background:var(--v);color:#fff;border-radius:11px 11px 3px 11px;max-width:80%;padding:8px 11px;font-size:10px;line-height:1.65;letter-spacing:.06em;margin-bottom:6px;word-break:break-word;margin-left:auto}
+.ci{background:var(--s3);color:var(--iv2);border-radius:11px 11px 11px 3px;max-width:80%;padding:8px 11px;font-size:10px;line-height:1.65;letter-spacing:.06em;margin-bottom:6px;word-break:break-word}
+.ct{text-align:center;font-size:8px;letter-spacing:.28em;text-transform:uppercase;color:var(--iv3);margin:7px 0}
+.aity span{width:4px;height:4px;border-radius:50%;background:var(--vl);display:inline-block;animation:bou .9s infinite;margin-right:3px}
+.aity span:nth-child(2){animation-delay:.2s}.aity span:nth-child(3){animation-delay:.4s}
+@keyframes bou{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+
+/* AI WIDGET (global) */
+.aiw{position:fixed;bottom:22px;right:22px;z-index:150;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.aib{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--vd),var(--vl));border:1.5px solid rgba(123,82,240,.45);display:grid;place-items:center;cursor:pointer;box-shadow:0 0 22px rgba(123,82,240,.45);transition:.2s;position:relative}
+.aib::before{content:'';position:absolute;inset:-5px;border-radius:50%;border:1px solid rgba(123,82,240,.18);animation:rp 2.5s ease-in-out infinite}
+@keyframes rp{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.1);opacity:.15}}
+.aibdg{position:absolute;top:-2px;right:-2px;width:15px;height:15px;border-radius:50%;background:var(--rl);border:2px solid var(--ink);display:grid;place-items:center;font-size:7px;font-weight:600;color:#fff}
+.aip{width:300px;background:var(--s1);border:1px solid var(--bd2);border-radius:18px;overflow:hidden;display:none;box-shadow:0 22px 55px rgba(0,0,0,.6);animation:ndI .2s ease}
+.aip.open{display:flex;flex-direction:column}
+@keyframes ndI{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.aihd{padding:13px 15px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:9px}
+.aihav{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--vd),var(--vl));display:grid;place-items:center;font-size:12px;flex-shrink:0}
+.aith{font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-weight:300}
+.aist{font-size:8px;letter-spacing:.18em;color:var(--jade)}
+.aiclose{margin-left:auto;cursor:pointer;color:var(--iv3);transition:.15s}
+.aim{height:240px;overflow-y:auto;padding:12px 13px 7px;display:flex;flex-direction:column}
+.aii{padding:9px 11px;border-top:1px solid var(--bd);display:flex;gap:7px}
+.aiinp{flex:1;background:var(--s2);border:1px solid var(--bd);border-radius:7px;padding:7px 10px;font-size:10px;color:var(--ivory);font-family:'Josefin Sans',sans-serif;font-weight:200;letter-spacing:.07em;outline:none;transition:.2s}
+.aiinp:focus{border-color:var(--bdv)}
+.aisnd{width:28px;height:28px;border-radius:6px;background:var(--v);border:none;display:grid;place-items:center;cursor:pointer;transition:.2s;color:#fff;flex-shrink:0}
+
+/* AI BRAIN SPECIFIC */
+.brain-hdr{
+  background:linear-gradient(135deg,rgba(85,48,204,.28),rgba(123,82,240,.09),transparent);
+  border:1px solid var(--bdv);border-radius:18px;padding:28px;margin-bottom:18px;position:relative;overflow:hidden;
+}
+.brain-hdr::before{content:'';position:absolute;top:-70px;right:-70px;width:260px;height:260px;background:radial-gradient(circle,rgba(123,82,240,.16),transparent 70%);pointer-events:none}
+.ai-icon{
+  width:58px;height:58px;border-radius:16px;
+  background:linear-gradient(135deg,var(--vd),var(--vl));
+  display:grid;place-items:center;font-size:24px;flex-shrink:0;
+  box-shadow:0 0 28px rgba(123,82,240,.5);position:relative;
+}
+.ai-icon::before{content:'';position:absolute;inset:-6px;border-radius:20px;border:1px solid rgba(123,82,240,.22);animation:rp 2s ease-in-out infinite}
+
+.feed-item{display:flex;gap:11px;align-items:flex-start;padding:9px 11px;border-radius:9px;border:1px solid transparent;margin-bottom:3px;cursor:default;transition:.15s;animation:fI .3s ease both}
+.feed-item:hover{background:var(--s2);border-color:var(--bd)}
+@keyframes fI{from{opacity:0;transform:translateX(-7px)}to{opacity:1;transform:translateX(0)}}
+.feed-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px}
+
+.train-item{display:flex;gap:13px;align-items:center;padding:11px 12px;border-radius:10px;border:1px solid var(--bd);background:var(--s2);margin-bottom:5px;cursor:pointer;transition:.2s}
+.train-item:hover{border-color:var(--bdv)}
+.train-score{width:40px;height:40px;border-radius:9px;background:rgba(123,82,240,.1);border:1px solid rgba(123,82,240,.2);display:grid;place-items:center;flex-shrink:0;font-family:'GFS Didot',serif;font-size:14px;color:var(--vl)}
+
+.cc{background:var(--s2);border-radius:12px;overflow:hidden}
+.cc-msgs{height:190px;overflow-y:auto;padding:12px 13px 7px;display:flex;flex-direction:column}
+
+.kb-item{display:flex;gap:11px;align-items:flex-start;padding:11px 12px;border-radius:10px;border:1px solid var(--bd);background:var(--s2);margin-bottom:5px;cursor:pointer;transition:.2s}
+.kb-item:hover{border-color:var(--bdv)}
+.kb-cat{width:28px;height:28px;border-radius:7px;display:grid;place-items:center;flex-shrink:0;font-size:11px}
+
+.ctry{background:var(--s2);border:1px solid var(--bd);border-radius:11px;padding:12px;transition:.2s;cursor:pointer}
+.ctry:hover{border-color:var(--bdv)}
+
+/* MODAL */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(14px);z-index:200;display:none;place-items:center}
+.ov.open{display:grid}
+.mod{background:var(--s1);border:1px solid var(--bd2);border-radius:20px;padding:28px;width:400px;text-align:left;animation:mIn .2s ease;position:relative;max-height:85vh;overflow-y:auto}
+@keyframes mIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+.mod-x{position:absolute;top:12px;right:12px;width:26px;height:26px;border-radius:6px;border:1px solid var(--bd);background:var(--s2);display:grid;place-items:center;cursor:pointer;color:var(--iv3);font-size:12px;transition:.15s}
+.mod-x:hover{color:var(--rl)}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SIDEBAR -->
+<div class="sb">
+  <div class="sb-head">
+    <div class="sb-wm">rWoman</div>
+    <div class="sb-sub">Premium Platform</div>
+    <div class="sb-prof" onclick="go('03-perfil.html')">
+      <div class="sb-av">A</div>
+      <div><div class="sb-un">Aurora</div><div class="sb-ut">Elite</div></div>
+      <div class="sb-dot"></div>
+    </div>
+  </div>
+  <div class="sb-sc">
+    <div class="sb-s">Principal</div>
+    <div class="sb-a" onclick="go('02-dashboard.html')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Painel</div>
+    <div class="sb-a" onclick="go('03-perfil.html')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.3-6 8-6s6.5 2 8 6"/></svg>Meu Perfil</div>
+    <div class="sb-a" onclick="go('10-anunciate.html')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16M4 9h10"/><rect x="4" y="14" width="16" height="7" rx="2"/></svg>Anunciar-me<span class="sb-n au">Hot</span></div>
+    <div class="sb-s">Comunicação</div>
+    <div class="sb-a" onclick="go('04-mensagens.html')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20.5l1.6-5A8.5 8.5 0 1 1 21 11.5Z"/></svg>Mensagens<span class="sb-n">12</span></div>
+    <div class="sb-a" onclick="go('05-notificacoes.html')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>Notificações<span class="sb-n">5</span></div>
+    <div class="sb-s">Conta</div>
+    <div class="sb-a" onclick="go('06-agenda.html')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>Agenda</div>
+    <div class="sb-a" onclick="go('07-galeria.html')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="m4 15 4-4 4 4 2-2 6 6"/><circle cx="15.5" cy="9.5" r="1.5"/></svg>Galeria<span class="sb-n">3</span></div>
+    <div class="sb-a" onclick="go('08-visitas.html')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="3"/></svg>Visitas</div>
+    <div class="sb-a" onclick="go('09-estatisticas.html')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19V5M4 19h16m-13-4 4-4 3 3 5-7"/></svg>Estatísticas</div>
+    <div class="sb-s">Segurança</div>
+    <div class="sb-a" onclick="go('11-verificacao.html')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3 4.8 6.2v5.3c0 4.7 3 8.2 7.2 9.5 4.2-1.3 7.2-4.8 7.2-9.5V6.2Z"/><path d="m8.8 12 2.1 2.1 4.4-4.6"/></svg>Verificação<span class="sb-n g">OK</span></div>
+    <div class="sb-a" onclick="go('12-configuracoes.html')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1A2 2 0 1 1 4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.3 7A2 2 0 1 1 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.6V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.6h.1a1.7 1.7 0 0 0 1.9-.3l.1-.1A2 2 0 1 1 19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.6 1h.1a2 2 0 1 1 0 4H21a1.7 1.7 0 0 0-1.6 1Z"/></svg>Configurações</div>
+    <div class="sb-a" onclick="go('13-suporte.html')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.7 2.7 0 0 1 5.1 1.3c0 2-2.6 2.2-2.6 4.2M12 18h.01"/></svg>Suporte</div>
+    <div class="sb-a on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="11" rx="7" ry="6"/><path d="M5 11c-1.5 0-3 .5-3 2s1 3 3 3m14-5c1.5 0 3 .5 3 2s-1 3-3 3"/><path d="M9 7V5m6 2V5M9 17v2m6-2v2"/></svg>Cérebro IA<span class="sb-n au">Beta</span></div>
+  </div>
+  <div class="sb-ft">
+    <div class="sb-out" onclick="document.getElementById('ov-logout').classList.add('open')">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 17l5-5-5-5M15 12H3"/><path d="M14 4h4a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-4"/></svg>Cerrar Sesión
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="tb">
+    <div>
+      <div class="tb-t">Cérebro IA</div>
+      <div style="font-size:8px;letter-spacing:.38em;text-transform:uppercase;color:var(--iv3);margin-top:2px;font-weight:200">Centro de Controlo · Anthropic Claude</div>
+    </div>
+    <div class="tb-r">
+      <span class="pl pg" style="font-size:8px">● Sistema ativo</span>
+      <button class="tb-btn" onclick="runTraining()">Treinar agora</button>
+    </div>
+  </div>
+
+  <div class="pw">
+
+    <!-- BRAIN HEADER -->
+    <div class="brain-hdr mb16">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+        <div class="ai-icon">✦</div>
+        <div>
+          <div style="font-family:'GFS Didot',serif;font-size:clamp(20px,2.8vw,32px);letter-spacing:.06em;line-height:1.1;margin-bottom:5px">Aurora AI — Cérebro IA</div>
+          <div class="mc mb8" style="font-size:7px">Anthropic Claude · Pinecone KB · 7 Agentes n8n ativos</div>
+          <div style="display:flex;gap:7px;flex-wrap:wrap">
+            <span class="pl pg">● Ativo</span>
+            <span class="pl pv">Claude Sonnet 4</span>
+            <span class="pl pau">v2.4.1</span>
+            <span class="pl pgr">Atualizado: hoje 02:00</span>
+          </div>
+        </div>
+      </div>
+      <div class="g4" style="gap:11px">
+        <div class="st"><div class="mc mb4" style="font-size:7px">Respostas hoje</div><div class="st-v" id="cr">247</div><div class="st-d up">▲ +12%</div></div>
+        <div class="st"><div class="mc mb4" style="font-size:7px">Taxa resolução</div><div class="st-v" id="ct">89%</div><div class="st-d up">▲ +3%</div></div>
+        <div class="st"><div class="mc mb4" style="font-size:7px">Escalações</div><div class="st-v" id="ce">8</div><div class="st-d" style="background:rgba(192,69,112,.1);color:var(--rl);border-color:rgba(192,69,112,.2)">▼ -2</div></div>
+        <div class="st"><div class="mc mb4" style="font-size:7px">Score qualidade</div><div class="st-v" id="cq">94</div><div class="st-d up">▲ +1</div></div>
+      </div>
+    </div>
+
+    <!-- ROW 1: Live chat test + Feed -->
+    <div class="g2 mb16">
+
+      <!-- Live Chat Test -->
+      <div class="c">
+        <div class="flex fac fjb mb12">
+          <div>
+            <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-weight:300">Testar agente em tempo real</div>
+            <div class="mc mt4" style="font-size:7px">API Anthropic · modelo configurável abaixo</div>
+          </div>
+          <span class="pl pg" id="ai-pill">● Online</span>
+        </div>
+        <div class="cc">
+          <div class="cc-msgs" id="test-msgs">
+            <div class="ct">Sessão de teste</div>
+            <div class="ci">Olá ✦ Sou Aurora AI. Como posso ajudar?</div>
+          </div>
+          <div style="padding:9px 11px;border-top:1px solid var(--bd);display:flex;gap:7px">
+            <input id="test-inp" style="flex:1;background:var(--s3);border:1px solid var(--bd);border-radius:7px;padding:7px 10px;color:var(--ivory);font-size:10px;font-family:'Josefin Sans',sans-serif;font-weight:200;letter-spacing:.07em;outline:none;transition:.2s" placeholder="Testa o agente…" onfocus="this.style.borderColor='var(--bdv)'" onblur="this.style.borderColor='var(--bd)'" onkeydown="if(event.key==='Enter')testChat()">
+            <button class="btn bp bsm" onclick="testChat()"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13M22 2 15 22l-4-9-9-4 20-7z"/></svg></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Activity Feed -->
+      <div class="c">
+        <div class="flex fac fjb mb12">
+          <div>
+            <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-weight:300">Atividade ao vivo</div>
+            <div class="mc mt4" style="font-size:7px">Interações em tempo real</div>
+          </div>
+          <button class="btn bg bsm" onclick="refreshFeed()">Atualizar</button>
+        </div>
+        <div style="max-height:230px;overflow-y:auto" id="live-feed">
+          <div class="feed-item"><div class="feed-dot" style="background:var(--jade)"></div><div><div style="font-size:10px;font-weight:200;letter-spacing:.07em;margin-bottom:2px">Resposta enviada — Cliente privado (Barcelona)</div><div class="mc" style="font-size:7px">Há 23s · billing · auto-resolvido</div></div></div>
+          <div class="feed-item"><div class="feed-dot" style="background:var(--vl)"></div><div><div style="font-size:10px;font-weight:200;letter-spacing:.07em;margin-bottom:2px">Nova mensagem recebida — Visitante #1042</div><div class="mc" style="font-size:7px">Há 1m · geral · processando</div></div></div>
+          <div class="feed-item"><div class="feed-dot" style="background:var(--gl)"></div><div><div style="font-size:10px;font-weight:200;letter-spacing:.07em;margin-bottom:2px">KB atualizada — 3 novas entradas</div><div class="mc" style="font-size:7px">Há 2m · knowledge base</div></div></div>
+          <div class="feed-item"><div class="feed-dot" style="background:var(--rl)"></div><div><div style="font-size:10px;font-weight:200;letter-spacing:.07em;margin-bottom:2px">Escalação para humano — caso legal (Madrid)</div><div class="mc" style="font-size:7px">Há 5m · legal · aguarda agente</div></div></div>
+          <div class="feed-item"><div class="feed-dot" style="background:var(--jade)"></div><div><div style="font-size:10px;font-weight:200;letter-spacing:.07em;margin-bottom:2px">Pedido galeria gerido automaticamente</div><div class="mc" style="font-size:7px">Há 8m · galeria · auto-resolvido</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 2: Training + Countries -->
+    <div class="g2 mb16">
+
+      <!-- Training Log -->
+      <div class="c">
+        <div class="flex fac fjb mb12">
+          <div>
+            <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-weight:300">Aprendizagem diária</div>
+            <div class="mc mt4" style="font-size:7px">Ciclo 02:00 AM · análise de erros e padrões</div>
+          </div>
+          <button class="btn bp bsm" id="train-btn" onclick="runTraining()">Treinar agora</button>
+        </div>
+        <div id="train-log">
+          <div class="train-item"><div class="train-score">94</div><div style="flex:1"><div style="font-size:10px;font-weight:200;letter-spacing:.09em;margin-bottom:2px">Ciclo 27/04/2025 — 02:00</div><div class="mc" style="font-size:7px">247 interações · 8 erros · 14 KB entries</div></div><span class="pl pg">Completo</span></div>
+          <div class="train-item"><div class="train-score" style="color:var(--gl);border-color:rgba(184,135,42,.2);background:rgba(184,135,42,.08)">88</div><div style="flex:1"><div style="font-size:10px;font-weight:200;letter-spacing:.09em;margin-bottom:2px">Ciclo 26/04/2025 — 02:00</div><div class="mc" style="font-size:7px">198 interações · 12 erros · 9 KB entries</div></div><span class="pl pg">Completo</span></div>
+          <div class="train-item"><div class="train-score" style="color:var(--gl);border-color:rgba(184,135,42,.2);background:rgba(184,135,42,.08)">85</div><div style="flex:1"><div style="font-size:10px;font-weight:200;letter-spacing:.09em;margin-bottom:2px">Ciclo 25/04/2025 — 02:00</div><div class="mc" style="font-size:7px">223 interações · 15 erros · 11 KB entries</div></div><span class="pl pg">Completo</span></div>
+        </div>
+        <div id="train-prog" style="display:none" class="cv mt12">
+          <div style="font-size:10px;font-weight:300;letter-spacing:.1em;margin-bottom:9px" id="train-status">Iniciando…</div>
+          <div class="pg2"><div class="pf" id="train-bar" style="width:0%;transition:width .5s"></div></div>
+          <div class="mc mt8" id="train-detail" style="font-size:7px">A processar…</div>
+        </div>
+      </div>
+
+      <!-- Countries -->
+      <div class="c">
+        <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-weight:300;margin-bottom:14px">Países ativos · Contexto legal</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+          <div class="ctry" onclick="showLaw('ES')"><div style="font-size:22px;margin-bottom:6px">🇪🇸</div><div style="font-size:11px;font-weight:300;letter-spacing:.1em;margin-bottom:2px">España</div><div class="mc" style="font-size:7px">RGPD · LSSI</div></div>
+          <div class="ctry" onclick="showLaw('PT')"><div style="font-size:22px;margin-bottom:6px">🇵🇹</div><div style="font-size:11px;font-weight:300;letter-spacing:.1em;margin-bottom:2px">Portugal</div><div class="mc" style="font-size:7px">RGPD · Lei 24/2023</div></div>
+          <div class="ctry" onclick="showLaw('MX')"><div style="font-size:22px;margin-bottom:6px">🇲🇽</div><div style="font-size:11px;font-weight:300;letter-spacing:.1em;margin-bottom:2px">México</div><div class="mc" style="font-size:7px">LFPDPPP</div></div>
+          <div class="ctry" onclick="showLaw('AR')"><div style="font-size:22px;margin-bottom:6px">🇦🇷</div><div style="font-size:11px;font-weight:300;letter-spacing:.1em;margin-bottom:2px">Argentina</div><div class="mc" style="font-size:7px">Ley 25326</div></div>
+          <div class="ctry" onclick="showLaw('BR')"><div style="font-size:22px;margin-bottom:6px">🇧🇷</div><div style="font-size:11px;font-weight:300;letter-spacing:.1em;margin-bottom:2px">Brasil</div><div class="mc" style="font-size:7px">LGPD · CDC</div></div>
+          <div class="ctry" onclick="showLaw('US')"><div style="font-size:22px;margin-bottom:6px">🇺🇸</div><div style="font-size:11px;font-weight:300;letter-spacing:.1em;margin-bottom:2px">EUA</div><div class="mc" style="font-size:7px">CCPA · CAN-SPAM</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 3: KB + Config -->
+    <div class="g2 mb16">
+
+      <!-- Knowledge Base -->
+      <div class="c">
+        <div class="flex fac fjb mb12">
+          <div>
+            <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-weight:300">Base de conhecimento</div>
+            <div class="mc mt4" style="font-size:7px">Pinecone · 1.847 entradas · dim 1536</div>
+          </div>
+          <button class="btn bp bsm">Pesquisar KB</button>
+        </div>
+        <div>
+          <div class="kb-item"><div class="kb-cat" style="background:rgba(123,82,240,.1);border:1px solid rgba(123,82,240,.2);color:var(--vl)">💰</div><div style="flex:1"><div style="font-size:10px;font-weight:200;letter-spacing:.08em;margin-bottom:2px">Como cancelo a subscrição?</div><div class="mc" style="font-size:7px">billing · conf. 0.96 · usado 147×</div></div><span class="pl pv">Billing</span></div>
+          <div class="kb-item"><div class="kb-cat" style="background:rgba(39,139,98,.08);border:1px solid rgba(39,139,98,.2);color:var(--jade)">🔒</div><div style="flex:1"><div style="font-size:10px;font-weight:200;letter-spacing:.08em;margin-bottom:2px">Como funciona a verificação?</div><div class="mc" style="font-size:7px">verification · conf. 0.98 · usado 89×</div></div><span class="pl pg">Verificação</span></div>
+          <div class="kb-item"><div class="kb-cat" style="background:rgba(184,135,42,.08);border:1px solid rgba(184,135,42,.2);color:var(--gl)">📸</div><div style="flex:1"><div style="font-size:10px;font-weight:200;letter-spacing:.08em;margin-bottom:2px">Como faço upload à galeria?</div><div class="mc" style="font-size:7px">gallery · conf. 0.94 · usado 63×</div></div><span class="pl pau">Galeria</span></div>
+          <div class="kb-item"><div class="kb-cat" style="background:rgba(192,69,112,.08);border:1px solid rgba(192,69,112,.2);color:var(--rl)">⚖️</div><div style="flex:1"><div style="font-size:10px;font-weight:200;letter-spacing:.08em;margin-bottom:2px">Desistência — Espanha (14 dias)</div><div class="mc" style="font-size:7px">legal · ES · conf. 0.99 · usado 28×</div></div><span class="pl prr">Legal</span></div>
+        </div>
+        <button class="btn bg bsm w100 mt12">Ver todas as 1.847 entradas</button>
+      </div>
+
+      <!-- Agent Config -->
+      <div class="c">
+        <div class="flex fac fjb mb12">
+          <div>
+            <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-weight:300">Configuração do agente</div>
+            <div class="mc mt4" style="font-size:7px">Prompt · Modelo · Temperatura</div>
+          </div>
+          <button class="btn bp bsm" onclick="saveConf()">Guardar</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="fl"><label>Modelo IA</label>
+            <select id="ai-model">
+              <option value="claude-sonnet-4-20250514">Claude Sonnet 4 (recomendado)</option>
+              <option value="claude-opus-4-6">Claude Opus 4.6</option>
+              <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5</option>
+            </select>
+          </div>
+          <div class="fl"><label>Tom do agente</label>
+            <select id="ai-tone">
+              <option>Sofisticado e discreto</option>
+              <option>Formal e técnico</option>
+              <option>Empático e caloroso</option>
+            </select>
+          </div>
+          <div class="fl"><label>Temperatura — <span id="tv">0.6</span></label>
+            <input type="range" min="0" max="1" step="0.1" value="0.6" style="padding:4px 0" oninput="document.getElementById('tv').textContent=this.value;window.aiTemp=parseFloat(this.value)">
+          </div>
+          <div class="fl"><label>Prompt do sistema</label>
+            <textarea id="sys-prompt" style="min-height:75px;font-size:9px">És a assistente premium da rWoman em Barcelona. Respondes em português, elegante e discreto. Ajudas com conta, anúncios, pagamentos, verificação, galeria, agenda e leis. Casos graves escalas a humano.</textarea>
+          </div>
+          <div class="sr" style="padding:8px 0"><div style="font-size:10px;font-weight:200;letter-spacing:.09em">Escalação automática</div><label class="tg"><input type="checkbox" checked><span class="tg-t"></span></label></div>
+          <div class="sr" style="padding:8px 0;border-bottom:none"><div style="font-size:10px;font-weight:200;letter-spacing:.09em">Aprendizagem diária</div><label class="tg"><input type="checkbox" checked><span class="tg-t"></span></label></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 4: Research Feed -->
+    <div class="c">
+      <div class="flex fac fjb mb14">
+        <div>
+          <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-weight:300">Investigação diária — Melhores práticas</div>
+          <div class="mc mt4" style="font-size:7px">Ciclo 06:00 AM · Anthropic API · última pesquisa hoje</div>
+        </div>
+        <button class="btn bg bsm" onclick="runResearch()">Pesquisar agora</button>
+      </div>
+      <div class="g3" style="gap:11px" id="research">
+        <div class="cd"><div style="font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--vl);margin-bottom:8px;font-weight:300">CS Trends 2025</div><div style="font-size:10px;font-weight:200;letter-spacing:.07em;line-height:1.75;color:var(--iv2)">IA conversacional reduz tempo de resposta em 74% em plataformas premium segundo Forbes.</div><div class="mc mt8" style="font-size:7px">Forbes · Hoje 06:00</div></div>
+        <div class="cd"><div style="font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--gl);margin-bottom:8px;font-weight:300">Legal Update</div><div style="font-size:10px;font-weight:200;letter-spacing:.07em;line-height:1.75;color:var(--iv2)">Espanha reforça RGPD para plataformas adultas — prazo de resposta reduz para 48h.</div><div class="mc mt8" style="font-size:7px">AEPD.es · Hoje 06:00</div></div>
+        <div class="cd"><div style="font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--jade);margin-bottom:8px;font-weight:300">Best Practice</div><div style="font-size:10px;font-weight:200;letter-spacing:.07em;line-height:1.75;color:var(--iv2)">Personalização de emails de boas-vindas aumenta retenção em 38% — Harvard Business Review.</div><div class="mc mt8" style="font-size:7px">HBR · Hoje 06:00</div></div>
+      </div>
+    </div>
+
+  </div><!-- /pw -->
+</div><!-- /main -->
+</div><!-- /shell -->
+
+<!-- AI Float Widget -->
+<div class="aiw">
+  <div class="aip" id="aip">
+    <div class="aihd"><div class="aihav">✦</div><div><div class="aith">Assistente rWoman</div><div class="aist">● Online sempre</div></div>
+      <div class="aiclose" onclick="tgAI()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></div></div>
+    <div class="aim" id="aimsg"><div class="ct">Hoje</div><div class="ci">Olá, Aurora ✦ Como posso ajudar?</div></div>
+    <div class="aii"><input class="aiinp" id="aiinp" placeholder="Escreve…" onkeydown="if(event.key==='Enter')sndAI()"><button class="aisnd" onclick="sndAI()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13M22 2 15 22l-4-9-9-4 20-7z"/></svg></button></div>
+  </div>
+  <div class="aib" onclick="tgAI()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><div class="aibdg" id="aibdg" style="display:none">1</div></div>
+</div>
+
+<!-- Country law modal -->
+<div class="ov" id="ov-law" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="mod"><div class="mod-x" onclick="document.getElementById('ov-law').classList.remove('open')">✕</div><div id="law-content"></div></div>
+</div>
+
+<!-- Logout modal -->
+<div class="ov" id="ov-logout" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="mod" style="text-align:center">
+    <div class="mod-x" onclick="document.getElementById('ov-logout').classList.remove('open')">✕</div>
+    <div style="font-size:32px;margin-bottom:11px">✦</div>
+    <div style="font-family:'GFS Didot',serif;font-size:19px;letter-spacing:.1em;margin-bottom:8px">Cerrar Sesión</div>
+    <p style="font-size:9px;letter-spacing:.12em;color:var(--iv3);margin-bottom:22px;line-height:1.9">Confirmar saída da conta?</p>
+    <div style="display:flex;gap:9px"><button class="btn bg w100" onclick="document.getElementById('ov-logout').classList.remove('open')">Cancelar</button><button class="btn bp w100" onclick="go('01-home.html')">Confirmar</button></div>
+  </div>
+</div>
+
+<script>
+const API = 'https://api.anthropic.com/v1/messages';
+window.aiTemp = 0.6;
+
+function go(p){window.location.href=p}
+
+// ========================================
+// LIVE AI CHAT TEST
+// ========================================
+async function testChat(){
+  const inp=document.getElementById('test-inp');
+  const msgs=document.getElementById('test-msgs');
+  const txt=inp.value.trim();if(!txt)return;inp.value='';
+  
+  const ub=document.createElement('div');ub.className='co';ub.textContent=txt;msgs.appendChild(ub);
+  const ty=document.createElement('div');ty.style.cssText='display:flex;gap:4px;align-items:center;padding:7px 10px;background:var(--s3);border-radius:10px 10px 10px 3px;width:fit-content;margin-bottom:6px';
+  ty.innerHTML='<span class="aity"><span></span><span></span><span></span></span>';msgs.appendChild(ty);
+  msgs.scrollTop=msgs.scrollHeight;
+
+  try{
+    const model=document.getElementById('ai-model').value||'claude-sonnet-4-20250514';
+    const tone=document.getElementById('ai-tone').value||'Sofisticado e discreto';
+    const sys=document.getElementById('sys-prompt').value;
+    
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      model,max_tokens:1000,
+      system:`${sys}\n\nTom: ${tone}. Responde sempre em português.`,
+      messages:[{role:'user',content:txt}]
+    })});
+    const d=await r.json();ty.remove();
+    
+    const ab=document.createElement('div');ab.className='ci';ab.textContent=d.content?.[0]?.text||'Erro na resposta.';msgs.appendChild(ab);
+    msgs.scrollTop=msgs.scrollHeight;
+    
+    // Update counter
+    const c=document.getElementById('cr');c.textContent=parseInt(c.textContent)+1;
+    addFeed('jade','Resposta de teste enviada','Agora · test');
+  }catch(e){
+    ty.remove();
+    const eb=document.createElement('div');eb.className='ci';eb.textContent='Erro de ligação à API Anthropic. Verifica a chave API.';msgs.appendChild(eb);
+    msgs.scrollTop=msgs.scrollHeight;
+  }
+}
+
+// ========================================
+// DAILY TRAINING
+// ========================================
+async function runTraining(){
+  const btn=document.getElementById('train-btn');
+  const prog=document.getElementById('train-prog');
+  const bar=document.getElementById('train-bar');
+  const status=document.getElementById('train-status');
+  const detail=document.getElementById('train-detail');
+  
+  btn.disabled=true;btn.textContent='A treinar…';prog.style.display='block';
+  
+  const steps=[
+    [12,'Lendo interações do dia…','247 conversas carregadas'],
+    [28,'Filtrando erros e feedback…','8 casos identificados'],
+    [46,'Analisando padrões com Claude…','API Anthropic ativa'],
+    [64,'Gerando novas entradas KB…','14 novas entradas'],
+    [80,'Atualizando vetores Pinecone…','Upsert em progresso'],
+    [96,'Gerando relatório…','Score calculado'],
+    [100,'Ciclo concluído ✦','Qualidade: 94/100'],
+  ];
+  
+  for(const [pct,msg,det] of steps){
+    status.textContent=msg;detail.textContent=det;bar.style.width=pct+'%';
+    await new Promise(r=>setTimeout(r,550));
+  }
+  
+  const log=document.getElementById('train-log');
+  const now=new Date();
+  const e=document.createElement('div');e.className='train-item';e.style.animation='fI .3s ease both';
+  e.innerHTML=`<div class="train-score">94</div><div style="flex:1"><div style="font-size:10px;font-weight:200;letter-spacing:.09em;margin-bottom:2px">Ciclo ${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()} — ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}</div><div class="mc" style="font-size:7px">247 interações · 8 erros · 14 KB entries</div></div><span class="pl pg">Completo</span>`;
+  log.insertBefore(e,log.firstChild);
+  
+  setTimeout(()=>{btn.disabled=false;btn.textContent='Treinar agora';prog.style.display='none';bar.style.width='0%'},1200);
+}
+
+// ========================================
+// DAILY RESEARCH via Anthropic
+// ========================================
+async function runResearch(){
+  const box=document.getElementById('research');
+  box.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:20px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--iv3)">A pesquisar… ✦</div>';
+  
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',max_tokens:800,
+      system:'Responde APENAS em JSON puro sem markdown. Formato exato: {"insights":[{"cat":"...","title":"...","text":"...","src":"..."}]}. Gera exatamente 3 insights.',
+      messages:[{role:'user',content:'Gera 3 insights recentes sobre: 1) tendências de atendimento ao cliente com IA em 2025, 2) updates legais de privacidade em Espanha, 3) melhores práticas de retenção em plataformas digitais. Em português, tom sofisticado.'}]
+    })});
+    const data=await r.json();
+    let ins=[];
+    try{ins=JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim()).insights||[]}catch(e){ins=[]}
+    
+    const cols=['var(--vl)','var(--gl)','var(--jade)'];
+    if(ins.length>0){
+      box.innerHTML=ins.map((x,i)=>`<div class="cd"><div style="font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:${cols[i]};margin-bottom:8px;font-weight:300">${x.cat||'Insight'}</div><div style="font-size:10px;font-weight:200;letter-spacing:.07em;line-height:1.75;color:var(--iv2)">${x.text||x.title}</div><div class="mc mt8" style="font-size:7px">${x.src||'Claude AI'} · ${new Date().toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'})}</div></div>`).join('');
+    }else{
+      box.innerHTML='<div class="cd" style="grid-column:1/-1;text-align:center;padding:18px;font-size:10px;letter-spacing:.1em;color:var(--iv3)">Pesquisa concluída. Verifica os logs.</div>';
+    }
+  }catch(e){
+    box.innerHTML='<div class="cd" style="grid-column:1/-1;text-align:center;padding:18px;font-size:10px;color:var(--rl)">Erro API. Verifica a chave Anthropic.</div>';
+  }
+}
+
+// ========================================
+// COUNTRY LAWS
+// ========================================
+const LAWS={
+  ES:{flag:'🇪🇸',name:'España',col:'var(--vl)',laws:[['RGPD','Reg. Geral Proteção de Dados · UE 2016/679'],['LSSI','Lei Serviços Sociedade Informação · Lei 34/2002'],['Consumidores','Real Decreto 1/2007 — desistimento 14 dias']],sla:'24h dias úteis',refund:'14 dias'},
+  PT:{flag:'🇵🇹',name:'Portugal',col:'var(--jade)',laws:[['RGPD','Aplicação plena no território'],['Lei 24/2023','Serviços Digitais'],['DL 24/2014','Contratos à distância']],sla:'15 dias úteis',refund:'14 dias'},
+  MX:{flag:'🇲🇽',name:'México',col:'var(--gl)',laws:[['LFPDPPP','Proteção de Dados Pessoais'],['PROFECO','Procuradoria do Consumidor'],['NOM-151','Serviços digitais']],sla:'5 dias hábeis',refund:'30 dias'},
+  AR:{flag:'🇦🇷',name:'Argentina',col:'var(--vl)',laws:[['Lei 25326','Proteção de Dados Pessoais'],['Lei 24240','Defesa do Consumidor'],['Res. 37/2019','E-commerce']],sla:'30 dias',refund:'10 dias hábeis'},
+  BR:{flag:'🇧🇷',name:'Brasil',col:'var(--jade)',laws:[['LGPD','Lei Geral de Proteção de Dados'],['CDC','Código Defesa Consumidor'],['Decreto 7962/2013','E-commerce — 7 dias']],sla:'5 dias úteis',refund:'7 dias'},
+  US:{flag:'🇺🇸',name:'EUA',col:'var(--rl)',laws:[['CCPA','California Consumer Privacy Act'],['CAN-SPAM','Unsubscribe obrigatório'],['FTC Act','Federal Trade Commission']],sla:'30 days',refund:'Varia por estado'},
+};
+
+function showLaw(code){
+  const c=LAWS[code];if(!c)return;
+  document.getElementById('law-content').innerHTML=`
+    <div style="font-size:28px;margin-bottom:10px">${c.flag}</div>
+    <div style="font-family:'GFS Didot',serif;font-size:18px;letter-spacing:.08em;color:${c.col};margin-bottom:5px">${c.name}</div>
+    <div class="mc mb14" style="font-size:7px">Contexto legal aplicado pelo agente</div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:13px">
+      ${c.laws.map(([n,d])=>`<div class="cd" style="padding:10px"><div style="font-size:9px;font-weight:300;letter-spacing:.12em;color:${c.col};margin-bottom:2px">${n}</div><div style="font-size:10px;color:var(--iv3);letter-spacing:.07em;font-weight:200">${d}</div></div>`).join('')}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div class="cd" style="padding:10px"><div class="mc mb4" style="font-size:7px">SLA resposta</div><div style="font-size:11px;font-weight:300;letter-spacing:.1em">${c.sla}</div></div>
+      <div class="cd" style="padding:10px"><div class="mc mb4" style="font-size:7px">Desistimento</div><div style="font-size:11px;font-weight:300;letter-spacing:.1em">${c.refund}</div></div>
+    </div>`;
+  document.getElementById('ov-law').classList.add('open');
+}
+
+// ========================================
+// UTILS
+// ========================================
+function addFeed(color,text,meta){
+  const feed=document.getElementById('live-feed');
+  const item=document.createElement('div');item.className='feed-item';
+  item.innerHTML=`<div class="feed-dot" style="background:var(--${color})"></div><div><div style="font-size:10px;font-weight:200;letter-spacing:.07em;margin-bottom:2px">${text}</div><div class="mc" style="font-size:7px">${meta}</div></div>`;
+  feed.insertBefore(item,feed.firstChild);
+  if(feed.children.length>8)feed.lastChild.remove();
+}
+
+function refreshFeed(){
+  const evts=[
+    ['jade','Resposta automática enviada','Agora · auto'],
+    ['vl','Mensagem recebida e classificada','Agora · inbox'],
+    ['gl','KB consultada — resposta encontrada','Agora · knowledge'],
+    ['jade','Email boas-vindas enviado','Agora · onboarding'],
+  ];
+  const e=evts[Math.floor(Math.random()*evts.length)];
+  addFeed(e[0],e[1],e[2]);
+}
+
+function saveConf(){
+  const b=event.target;b.textContent='✓ Guardado';b.classList.remove('bp');b.classList.add('bg');
+  setTimeout(()=>{b.textContent='Guardar';b.classList.add('bp');b.classList.remove('bg')},1500);
+}
+
+// AI Float Widget
+let aiOpen=false;
+function tgAI(){aiOpen=!aiOpen;document.getElementById('aip').classList.toggle('open',aiOpen);if(aiOpen){document.getElementById('aibdg').style.display='none';document.getElementById('aiinp').focus()}}
+async function sndAI(){
+  const inp=document.getElementById('aiinp'),msgs=document.getElementById('aimsg'),txt=inp.value.trim();
+  if(!txt)return;inp.value='';
+  const ub=document.createElement('div');ub.className='co';ub.textContent=txt;msgs.appendChild(ub);
+  const ty=document.createElement('div');ty.style.cssText='display:flex;gap:4px;align-items:center;padding:7px 10px;background:var(--s3);border-radius:10px 10px 10px 3px;width:fit-content;margin-bottom:6px';ty.innerHTML='<span class="aity"><span></span><span></span><span></span></span>';msgs.appendChild(ty);msgs.scrollTop=msgs.scrollHeight;
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,system:'És a assistente premium da rWoman. Respondes em português, elegante e discreto. Ajudas com conta, anúncios, pagamentos, verificação, galeria e leis. Casos graves escalas.',messages:[{role:'user',content:txt}]})});
+    const d=await r.json();ty.remove();
+    const ab=document.createElement('div');ab.className='ci';ab.textContent=d.content?.[0]?.text||'Erro.';msgs.appendChild(ab);msgs.scrollTop=msgs.scrollHeight;
+  }catch(e){ty.remove();const eb=document.createElement('div');eb.className='ci';eb.textContent='Erro de ligação.';msgs.appendChild(eb);}
+}
+setTimeout(()=>{if(!aiOpen)document.getElementById('aibdg').style.display='grid'},3500);
+
+// Auto-refresh feed every 8s
+setInterval(()=>{
+  const e=[['jade','Resposta automática enviada','Agora · auto'],['vl','Mensagem classificada','Agora · inbox'],['gl','KB consultada','Agora · knowledge']];
+  const x=e[Math.floor(Math.random()*e.length)];addFeed(x[0],x[1],x[2]);
+},8000);
+</script>
+</body>
+</html>
