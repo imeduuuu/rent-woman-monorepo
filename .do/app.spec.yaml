@@ -224,13 +224,6 @@ services:
         scope: RUN_AND_BUILD_TIME
         type: SECRET
         value: ${db.DATABASE_URL}
-      - key: N8N_BASE_URL
-        scope: RUN_AND_BUILD_TIME
-        value: ${n8n.INTERNAL_URL}
-      - key: AGENTS_INTERNAL_TOKEN
-        scope: RUN_AND_BUILD_TIME
-        type: SECRET
-        value: local-agent-token-12345
 
   - name: n8n
     image:
