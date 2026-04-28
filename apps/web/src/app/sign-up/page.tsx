@@ -39,7 +39,7 @@ export default function SignUpPage(): JSX.Element {
 
     const passwordHash = await bcrypt.hash(password, 12);
 
-    await prisma.user.create({
+    const newUser = await prisma.user.create({
       data: {
         name,
         email,

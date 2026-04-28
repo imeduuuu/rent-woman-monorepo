@@ -207,10 +207,9 @@ const sidebarHtml = `
       <a href="09-estatisticas.html" class="nav-link {nav_estatisticas}"><span style="font-size:16px">📈</span> Estatísticas</a>
     </div>
     <div class="nav-group">
-      <div class="nav-title">Segurança & IA</div>
+      <div class="nav-title">Segurança</div>
       <a href="11-verificacao.html" class="nav-link {nav_verificacao}"><span style="font-size:16px">✓</span> Verificação <span class="badge success">OK</span></a>
       <a href="12-configuracoes.html" class="nav-link {nav_config}"><span style="font-size:16px">⚙</span> Configurações</a>
-      <a href="cerebro.html" class="nav-link {nav_cerebro}"><span style="font-size:16px; color:var(--primary)">✦</span> Cérebro IA</a>
     </div>
   </div>
 </div>
@@ -227,8 +226,7 @@ function buildPage(filename, title, contentHtml, activeNav) {
     .replace('{nav_visitas}', activeNav === 'visitas' ? 'active' : '')
     .replace('{nav_estatisticas}', activeNav === 'estatisticas' ? 'active' : '')
     .replace('{nav_verificacao}', activeNav === 'verificacao' ? 'active' : '')
-    .replace('{nav_config}', activeNav === 'config' ? 'active' : '')
-    .replace('{nav_cerebro}', activeNav === 'cerebro' ? 'active' : '');
+    .replace('{nav_config}', activeNav === 'config' ? 'active' : '');
 
   return `<!DOCTYPE html>
 <html lang="pt">
@@ -278,55 +276,15 @@ const dashboardHtml = `
     <div class="feed-item"><div class="feed-icon">📅</div><div><div class="feed-text">Nova reserva solicitada</div><div class="feed-time">Há 3 horas</div></div></div>
   </div>
   <div class="card">
-    <div class="card-header"><span>Cérebro IA — Ações Automáticas</span><button class="btn btn-outline" style="padding:4px 8px;font-size:10px" onclick="window.location.href='cerebro.html'">Cérebro IA</button></div>
-    <div class="feed-item"><div class="feed-icon" style="color:#fff;background:var(--primary)">✦</div><div><div class="feed-text">3 FAQs respondidas automaticamente</div><div class="feed-time">Nesta hora</div></div></div>
-    <div class="feed-item"><div class="feed-icon" style="color:#fff;background:var(--primary)">✦</div><div><div class="feed-text">Perfil atualizado na Base de Conhecimento</div><div class="feed-time">Há 4 horas</div></div></div>
+    <div class="card-header"><span>Automação ativa</span><span class="badge success">LED ON</span></div>
+    <div class="feed-item"><div class="feed-icon" style="color:var(--success);background:rgba(0,255,170,0.1)">●</div><div><div class="feed-text">3 FAQs respondidas instantaneamente</div><div class="feed-time">Nesta hora</div></div></div>
+    <div class="feed-item"><div class="feed-icon" style="color:var(--success);background:rgba(0,255,170,0.1)">●</div><div><div class="feed-text">Agenda e disponibilidade sincronizadas</div><div class="feed-time">Há 4 horas</div></div></div>
   </div>
 </div>
 `;
 fs.writeFileSync('apps/web/public/02-dashboard.html', buildPage('02-dashboard.html', 'Painel Geral', dashboardHtml, 'dashboard'));
 
-// 2. Cerebro IA (The Fully Automatic Dashboard the user wants)
-const cerebroHtml = `
-<div class="card" style="margin-bottom:32px; background: linear-gradient(to right, rgba(138,43,226,0.1), transparent); border-left: 4px solid var(--primary);">
-  <h2 style="font-family:var(--font-serif);font-size:28px;margin-bottom:8px">✦ Aurora AI</h2>
-  <p style="color:var(--text-muted);font-size:16px;max-width:800px;line-height:1.5">
-    A tua assistente inteligente está online e a integrar o fluxo do sistema. 
-    Aqui acompanhas <b>exclusivamente</b> as ações e resoluções automáticas executadas pela IA com os teus clientes, sem necessitares de intervir.
-  </p>
-</div>
-
-<div class="grid-3" style="margin-bottom:32px">
-  <div class="card"><div class="card-header">Interações hoje</div><div class="stat-value">247</div><div class="trend">98% Auto-resolvidas</div></div>
-  <div class="card"><div class="card-header">Tempo poupado</div><div class="stat-value">4.2h</div><div class="trend">▲ +30m vs Ontem</div></div>
-  <div class="card"><div class="card-header">Escalações (Necessitam de ti)</div><div class="stat-value" style="color:var(--warning)">5</div><div class="trend down">2 aguardam resposta</div></div>
-</div>
-
-<div class="grid-2">
-  <div class="card">
-    <div class="card-header">Fluxo Automático em Tempo Real</div>
-    <div style="height:400px;overflow-y:auto;padding-right:12px">
-      <div class="feed-item"><div class="feed-icon" style="background:var(--primary);color:#fff">✦</div><div><div class="feed-text">Resposta de tarifa enviada a Visitante #104</div><div class="feed-time">Agora mesmo · <b>Resolvido</b></div></div></div>
-      <div class="feed-item"><div class="feed-icon" style="background:var(--primary);color:#fff">✦</div><div><div class="feed-text">Dúvida sobre localização respondida</div><div class="feed-time">Há 2m · <b>Resolvido</b></div></div></div>
-      <div class="feed-item"><div class="feed-icon" style="background:rgba(255,170,0,0.2);color:var(--warning)">⚠</div><div><div class="feed-text">Pedido de serviço específico escalado</div><div class="feed-time">Há 15m · <b>Escalado para ti</b> no chat</div></div></div>
-      <div class="feed-item"><div class="feed-icon" style="background:var(--primary);color:#fff">✦</div><div><div class="feed-text">Envio automático de fotos públicas</div><div class="feed-time">Há 22m · <b>Resolvido</b></div></div></div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-header">Base de Conhecimento Ativa</div>
-    <div class="feed-item"><div><div class="feed-text" style="font-weight:600">Tarifas e Disponibilidade</div><div class="feed-time">Sincronizado há 1h · Usado 45x hoje</div></div></div>
-    <div class="feed-item"><div><div class="feed-text" style="font-weight:600">Regras e Limites</div><div class="feed-time">Sincronizado ontem · Usado 12x hoje</div></div></div>
-    <div class="feed-item"><div><div class="feed-text" style="font-weight:600">Localização e Estacionamento</div><div class="feed-time">Sincronizado há 3 dias · Usado 8x hoje</div></div></div>
-    <div style="margin-top:24px;padding:16px;background:rgba(0,255,170,0.05);border:1px solid rgba(0,255,170,0.2);border-radius:12px">
-      <div style="color:var(--success);font-weight:600;margin-bottom:8px">Sistema Operacional</div>
-      <p style="font-size:12px;color:var(--text-muted)">A IA está a aprender continuamente com as tuas mensagens e a atualizar a base de conhecimento sem intervenção manual.</p>
-    </div>
-  </div>
-</div>
-`;
-fs.writeFileSync('apps/web/public/cerebro.html', buildPage('cerebro.html', 'Cérebro IA', cerebroHtml, 'cerebro'));
-
-// 3. Mensagens
+// 2. Mensagens
 const mensagensHtml = `
 <div class="chat-layout">
   <div class="card chat-list" style="padding:16px">
@@ -335,7 +293,7 @@ const mensagensHtml = `
       <div style="font-size:12px;color:var(--text-muted)">Confirmo para as 18h?</div>
     </div>
     <div class="chat-item">
-      <div style="font-weight:600;margin-bottom:4px">Visitante #104 <span class="badge" style="background:var(--warning);color:#000">IA Escalou</span></div>
+      <div style="font-weight:600;margin-bottom:4px">Visitante #104 <span class="badge" style="background:var(--warning);color:#000">Revisão pendente</span></div>
       <div style="font-size:12px;color:var(--text-muted)">Pode ser num hotel no centro?</div>
     </div>
     <div class="chat-item">
@@ -350,7 +308,7 @@ const mensagensHtml = `
     </div>
     <div class="chat-messages">
       <div class="msg in">Olá, tens disponibilidade para amanhã à tarde?</div>
-      <div class="msg out" style="background:rgba(138,43,226,0.2);border:1px solid var(--primary)"><span style="font-size:10px;text-transform:uppercase;display:block;margin-bottom:4px;color:var(--primary)">✦ Resposta Automática (IA)</span>Sim, tenho horário livre das 14h às 18h amanhã. Qual horário preferes?</div>
+      <div class="msg out" style="background:rgba(138,43,226,0.2);border:1px solid var(--primary)"><span style="font-size:10px;text-transform:uppercase;display:block;margin-bottom:4px;color:var(--primary)">● Resposta imediata</span>Sim, tenho horário livre das 14h às 18h amanhã. Qual horário preferes?</div>
       <div class="msg in">Excelente. Confirmo para as 18h?</div>
     </div>
     <div class="chat-input">
@@ -362,7 +320,7 @@ const mensagensHtml = `
 `;
 fs.writeFileSync('apps/web/public/04-mensagens.html', buildPage('04-mensagens.html', 'Mensagens', mensagensHtml, 'mensagens'));
 
-// 4. Agenda
+// 3. Agenda
 const agendaHtml = `
 <div class="card mb-4" style="margin-bottom:24px">
   <div class="card-header" style="margin-bottom:0">Maio 2025</div>
@@ -379,7 +337,7 @@ const agendaHtml = `
 `;
 fs.writeFileSync('apps/web/public/06-agenda.html', buildPage('06-agenda.html', 'Agenda', agendaHtml, 'agenda'));
 
-// 5. Galeria
+// 4. Galeria
 const galeriaHtml = `
 <div style="display:flex;justify-content:flex-end;margin-bottom:24px">
   <button class="btn">Upload Nova Foto</button>
@@ -398,7 +356,7 @@ const galeriaHtml = `
 `;
 fs.writeFileSync('apps/web/public/07-galeria.html', buildPage('07-galeria.html', 'Galeria', galeriaHtml, 'galeria'));
 
-// 6. Configuracoes
+// 5. Configuracoes
 const configHtml = `
 <div class="card" style="max-width:600px;margin:0 auto">
   <div class="setting-row">

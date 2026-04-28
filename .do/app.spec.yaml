@@ -55,6 +55,7 @@ services:
         scope: RUN_TIME
         value: production
       - key: PORT
+        scope: RUN_AND_BUILD_TIME
         value: "4000"
       - key: NEXT_PUBLIC_APP_URL
         scope: RUN_TIME
@@ -84,6 +85,67 @@ services:
         scope: RUN_TIME
         type: SECRET
         value: replace-with-an-hmac-secret
+      - key: STRIPE_SECRET_KEY
+        scope: RUN_TIME
+        type: SECRET
+        value: sk_test_replace_me
+      - key: STRIPE_WEBHOOK_SECRET
+        scope: RUN_TIME
+        type: SECRET
+        value: whsec_replace_me
+      - key: AWS_REGION
+        scope: RUN_TIME
+        value: eu-west-1
+      - key: AWS_ACCESS_KEY_ID
+        scope: RUN_TIME
+        type: SECRET
+        value: replace-with-aws-access-key-id
+      - key: AWS_SECRET_ACCESS_KEY
+        scope: RUN_TIME
+        type: SECRET
+        value: replace-with-aws-secret-access-key
+      - key: AWS_S3_BUCKET
+        scope: RUN_TIME
+        value: rent-woman-media
+      - key: AWS_S3_PUBLIC_BASE_URL
+        scope: RUN_TIME
+        value: https://rent-woman-media.s3.eu-west-1.amazonaws.com
+      - key: AWS_REKOGNITION_MIN_CONFIDENCE
+        scope: RUN_TIME
+        value: "75"
+      - key: SUMSUB_BASE_URL
+        scope: RUN_TIME
+        value: https://api.sumsub.com
+      - key: SUMSUB_APP_TOKEN
+        scope: RUN_TIME
+        type: SECRET
+        value: replace-with-sumsub-app-token
+      - key: SUMSUB_SECRET_KEY
+        scope: RUN_TIME
+        type: SECRET
+        value: replace-with-sumsub-secret-key
+      - key: SUMSUB_LEVEL_NAME
+        scope: RUN_TIME
+        value: basic-kyc-level
+      - key: RESEND_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+        value: re_replace_me
+      - key: RESEND_FROM_EMAIL
+        scope: RUN_TIME
+        value: hello@r-woman.com
+      - key: TWILIO_ACCOUNT_SID
+        scope: RUN_TIME
+        type: SECRET
+        value: ACreplace_me
+      - key: TWILIO_AUTH_TOKEN
+        scope: RUN_TIME
+        type: SECRET
+        value: replace-with-twilio-auth-token
+      - key: TWILIO_VERIFY_SERVICE_SID
+        scope: RUN_TIME
+        type: SECRET
+        value: VAreplace_me
       - key: N8N_BASE_URL
         scope: RUN_TIME
         value: ${n8n.INTERNAL_URL}
@@ -105,7 +167,7 @@ services:
     http_port: 3000
     envs:
       - key: NODE_ENV
-        scope: RUN_TIME
+        scope: RUN_AND_BUILD_TIME
         value: production
       - key: NEXT_PUBLIC_APP_URL
         scope: RUN_AND_BUILD_TIME
@@ -115,6 +177,45 @@ services:
         scope: RUN_AND_BUILD_TIME
         type: SECRET
         value: ${APP_URL}
+      - key: NEXT_PUBLIC_SOCKET_URL
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: ${APP_URL}
+      - key: AUTH_SECRET
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: replace-with-a-32-byte-random-string
+      - key: AUTH_URL
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: ${APP_URL}
+      - key: AUTH_TRUST_HOST
+        scope: RUN_AND_BUILD_TIME
+        value: "true"
+      - key: INTERNAL_API_KEY
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: change-this-in-every-environment
+      - key: SOCKET_AUTH_SECRET
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: replace-with-an-hmac-secret
+      - key: STRIPE_SECRET_KEY
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: sk_test_replace_me
+      - key: STRIPE_PRICE_PREMIUM_MONTHLY
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: price_replace_premium_monthly
+      - key: STRIPE_PRICE_ELITE_MONTHLY
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: price_replace_elite_monthly
+      - key: STRIPE_PRICE_ONE_TIME_SPOTLIGHT
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: price_replace_spotlight
       - key: DATABASE_URL
         scope: RUN_AND_BUILD_TIME
         type: SECRET
@@ -123,6 +224,13 @@ services:
         scope: RUN_AND_BUILD_TIME
         type: SECRET
         value: ${db.DATABASE_URL}
+      - key: N8N_BASE_URL
+        scope: RUN_AND_BUILD_TIME
+        value: ${n8n.INTERNAL_URL}
+      - key: AGENTS_INTERNAL_TOKEN
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: local-agent-token-12345
 
   - name: n8n
     image:

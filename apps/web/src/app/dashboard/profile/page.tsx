@@ -94,7 +94,7 @@ export default async function ProfilePage(): Promise<JSX.Element> {
         </div>
         <div>
           <p className="text-sm font-medium text-white">Foto de perfil</p>
-          <p className="text-xs text-white/40 mt-0.5">Disponible en la sección "Mis fotos"</p>
+          <p className="text-xs text-white/40 mt-0.5">Disponible en la sección &quot;Mis fotos&quot;</p>
           <Link href="/dashboard/media" className="mt-2 inline-block text-xs text-brand-accent hover:underline">
             Ir a mis fotos →
           </Link>

@@ -1,6 +1,8 @@
 import type { ListingCard } from "@repo/types";
-import Link from "next/link";
 import { Badge } from "@repo/ui";
+import Link from "next/link";
+
+import { formatCurrency } from "@/lib/format";
 
 export function ProfileCard({ listing }: { listing: ListingCard }): JSX.Element {
   return (
@@ -32,7 +34,7 @@ export function ProfileCard({ listing }: { listing: ListingCard }): JSX.Element 
               {listing.title} <span className="font-body text-body-m font-normal text-rw-white-75">· 24</span>
             </h3>
             <p className="mt-0.5 truncate text-body-s text-rw-white-75">
-              {listing.city} · <span className="text-white">€{listing.hourlyRate || 180}/h</span>
+              {listing.city} · <span className="text-white">{formatCurrency(listing.baseRate, listing.currency)}/h</span>
             </p>
           </div>
         </div>

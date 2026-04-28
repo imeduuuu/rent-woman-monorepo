@@ -1,8 +1,8 @@
 import { prisma } from "@repo/db";
-import { Badge, Button, Card, Input } from "@repo/ui";
+import { Button, Card, Input } from "@repo/ui";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { auth } from "@/auth";

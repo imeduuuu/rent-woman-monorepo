@@ -42,7 +42,7 @@ export function SupportWidget({
     {
       id: "welcome",
       role: "agent",
-      text: `Hola${userName ? ` ${userName.split(" ")[0]}` : ""}! 👋 Soy el asistente de rwoman. ¿En qué puedo ayudarte?`
+        text: `Hola${userName ? ` ${userName.split(" ")[0]}` : ""}! 👋 Bienvenida a soporte rwoman. ¿En qué podemos ayudarte?`
     }
   ]);
   const [input, setInput] = useState("");
@@ -232,7 +232,7 @@ export function SupportWidget({
           </div>
 
           <p className="pb-2 text-center text-[10px] text-white/20">
-            Powered by IA · rwoman Support
+            Soporte privado · rwoman
           </p>
         </div>
       )}

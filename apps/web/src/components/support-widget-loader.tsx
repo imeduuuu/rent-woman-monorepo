@@ -1,5 +1,6 @@
-import { auth } from "@/auth";
 import { SupportWidget } from "./support-widget";
+
+import { auth } from "@/auth";
 
 export async function SupportWidgetLoader(): Promise<JSX.Element | null> {
   const session = await auth();

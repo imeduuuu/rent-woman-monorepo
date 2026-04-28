@@ -1,8 +1,9 @@
 import { Button } from "@repo/ui";
 import Link from "next/link";
 
-import { auth, signOut } from "@/auth";
 import { MobileNav } from "./mobile-nav";
+
+import { auth, signOut } from "@/auth";
 
 export async function SiteHeader(): Promise<JSX.Element> {
   const session = await auth();

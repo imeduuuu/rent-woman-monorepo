@@ -1,6 +1,7 @@
+import { MapPin, SlidersHorizontal } from "lucide-react";
+
 import { ProfileCard } from "@/components/profile-card";
 import { fetchListings } from "@/lib/api";
-import { Search, MapPin, SlidersHorizontal } from "lucide-react";
 
 export default async function DirectoryPage(): Promise<JSX.Element> {
   const listings = await fetchListings();

@@ -6,7 +6,6 @@
   "scripts": {
     "predev": "corepack pnpm --filter @repo/types build && corepack pnpm --filter @repo/db prisma:generate && corepack pnpm --filter @repo/db build",
     "dev": "tsx watch src/server.ts",
-    "prebuild": "corepack pnpm --filter @repo/types build && corepack pnpm --filter @repo/db build",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
     "lint": "eslint src --ext .ts",
